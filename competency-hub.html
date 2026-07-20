@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+  EmplyFlow Competency Hub — SPA (hash-routing, vanilla HTML/CSS/JS)
+  ----------------------------------------------------------------------------
+  КАК ВСТАВИТЬ В TILDA (финальная версия — один файл):
+    Блок «HTML-код» (T123), на всю ширину контейнера. Весь код (CSS+JS+данные)
+    будет встроен в один файл — без внешних зависимостей, кроме шрифта Manrope
+    (Google Fonts). Роутинг — через hash (#/…), сервер настраивать не нужно.
+  ГДЕ ПРАВИТЬ КОНТЕНТ: объект window.HUB_DATA (в финале — в <script> в начале).
+  SEO / вынос на отдельные страницы Tilda: см. комментарии [SEO] и [REUSE] ниже.
+  ============================================================================ -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Библиотека компетенций и кейсов EmplyFlow</title>
+<meta name="description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ======================= TOKENS (see design-system.html §02) ======================= */
+#efhub{
+  --bg:#ffffff; --surface:#f6f6fa; --surface-2:#eeeef4;
+  --ink:#16151d; --ink-2:#4c4b57; --ink-3:#6f6e7b; --line:#e6e6ee; --line-strong:#d5d5e0;
+  --accent:#4a3bff; --accent-deep:#3a2cf0; --accent-tint:#edecff; --accent-ink:#2c22b8;
+  --neutral-btn-bg:#16151d; --neutral-btn-ink:#ffffff;
+  --k-ai:#0f9d94;--k-ai-tint:#e0f3f1;--k-ai-ink:#0b7a73;
+  --k-crit:#4a72d0;--k-crit-tint:#e8edf9;--k-crit-ink:#3857a8;
+  --k-adapt:#17a877;--k-adapt-tint:#e1f4ec;--k-adapt-ink:#10805a;
+  --k-comm:#d55d76;--k-comm-tint:#fbe8ec;--k-comm-ink:#b03e57;
+  --k-team:#7d5fd1;--k-team-tint:#eee9fb;--k-team-ink:#5f43ab;
+  --f-hero:clamp(30px,5vw,46px);--f-h1:clamp(28px,4vw,40px);--f-h2:clamp(22px,2.4vw,28px);
+  --f-h3:20px;--f-h4:17px;--f-body:17px;--f-sm:15px;--f-cap:13px;--f-eye:12px;
+  --r-sm:10px;--r-md:14px;--r-lg:18px;--r-pill:999px;
+  --measure:680px;
+  --shadow-card:0 1px 2px rgba(20,18,45,.04),0 8px 24px -12px rgba(20,18,45,.18);
+  --shadow-pop:0 12px 40px -8px rgba(20,18,45,.28);
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+/* ======================= RESET (scoped) ======================= */
+#efhub *{box-sizing:border-box}
+#efhub{font-family:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:var(--f-body);
+  line-height:1.6;color:var(--ink);background:var(--surface);-webkit-font-smoothing:antialiased}
+#efhub h1,#efhub h2,#efhub h3,#efhub h4,#efhub h5,#efhub p{margin:0}
+#efhub a{color:var(--accent-ink);text-decoration:none;cursor:pointer}
+#efhub a:hover{color:var(--accent-deep)}
+#efhub img{max-width:100%;display:block}
+#efhub button{font-family:inherit}
+#efhub :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:6px}
+#efhub ::selection{background:var(--accent-tint)}
+
+/* ======================= TYPE ======================= */
+#efhub .h-hero{font-size:var(--f-hero);font-weight:800;line-height:1.05;letter-spacing:-.02em}
+#efhub .h1{font-size:var(--f-h1);font-weight:800;line-height:1.1;letter-spacing:-.02em}
+#efhub .h2{font-size:var(--f-h2);font-weight:700;line-height:1.15;letter-spacing:-.01em}
+#efhub .h3{font-size:var(--f-h3);font-weight:700;line-height:1.25}
+#efhub .h4{font-size:var(--f-h4);font-weight:700;line-height:1.3}
+#efhub .sm{font-size:var(--f-sm)} #efhub .cap{font-size:var(--f-cap);color:var(--ink-3)}
+#efhub .eyebrow{font-size:var(--f-eye);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+#efhub .muted{color:var(--ink-2)} #efhub .measure{max-width:var(--measure)}
+
+/* ======================= BUTTONS (visual code) ======================= */
+#efhub .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;
+  font-size:var(--f-sm);line-height:1;padding:12px 18px;border-radius:var(--r-pill);border:1.5px solid transparent;
+  cursor:pointer;white-space:nowrap;transition:all .15s var(--ease)}
+#efhub .btn:active{transform:scale(.98)}
+#efhub .btn svg{width:17px;height:17px;flex:none}
+#efhub .btn--accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+#efhub .btn--accent:hover{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+#efhub .btn--neutral{background:var(--neutral-btn-bg);color:#fff}
+#efhub .btn--neutral:hover{background:#000;color:#fff}
+#efhub .btn--ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+#efhub .btn--ghost:hover{background:var(--surface-2);color:var(--ink)}
+#efhub .btn--sm{padding:9px 14px;font-size:var(--f-cap)}
+#efhub .btn--block{width:100%}
+
+/* ======================= LABELS / CHIPS ======================= */
+#efhub .klabel{display:inline-flex;align-items:center;gap:7px;font-size:var(--f-cap);font-weight:700;
+  padding:4px 10px 4px 8px;border-radius:var(--r-pill);line-height:1.2;white-space:nowrap}
+#efhub .kdot{width:9px;height:9px;border-radius:50%;flex:none}
+#efhub .k-ai{background:var(--k-ai-tint);color:var(--k-ai-ink)} #efhub .k-ai .kdot{background:var(--k-ai)}
+#efhub .k-crit{background:var(--k-crit-tint);color:var(--k-crit-ink)} #efhub .k-crit .kdot{background:var(--k-crit)}
+#efhub .k-adapt{background:var(--k-adapt-tint);color:var(--k-adapt-ink)} #efhub .k-adapt .kdot{background:var(--k-adapt)}
+#efhub .k-comm{background:var(--k-comm-tint);color:var(--k-comm-ink)} #efhub .k-comm .kdot{background:var(--k-comm)}
+#efhub .k-team{background:var(--k-team-tint);color:var(--k-team-ink)} #efhub .k-team .kdot{background:var(--k-team)}
+#efhub .chip{display:inline-flex;align-items:center;gap:6px;font-size:var(--f-cap);font-weight:600;
+  padding:5px 11px;border-radius:var(--r-pill);background:var(--surface-2);color:var(--ink-2);line-height:1.3}
+#efhub .chip svg{width:14px;height:14px}
+
+/* ======================= CARDS ======================= */
+#efhub .card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-card)}
+#efhub .comp-card{position:relative;display:flex;flex-direction:column;gap:13px;padding:22px;overflow:hidden;
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease);cursor:pointer}
+#efhub .comp-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+#efhub .comp-card .accent-edge{position:absolute;top:0;left:0;right:0;height:4px}
+#efhub .comp-card h3{font-size:var(--f-h3);font-weight:700;line-height:1.2}
+#efhub .comp-card .desc{color:var(--ink-2);font-size:var(--f-sm);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#efhub .comp-card .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:var(--f-cap);color:var(--ink-3);font-weight:600}
+#efhub .comp-card .meta b{color:var(--ink);font-weight:700}
+#efhub .comp-card .actions{display:flex;gap:8px;margin-top:auto;padding-top:4px;flex-wrap:wrap}
+#efhub .case-card{display:flex;flex-direction:column;gap:11px;padding:18px;transition:transform .18s var(--ease),box-shadow .18s var(--ease);cursor:pointer}
+#efhub .case-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+#efhub .case-card h4{font-size:var(--f-h4);font-weight:700;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#efhub .case-card .cdesc{color:var(--ink-2);font-size:var(--f-sm);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#efhub .case-card .chips{display:flex;flex-wrap:wrap;gap:6px}
+#efhub .case-card .cfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:4px}
+#efhub .case-card .time{display:inline-flex;align-items:center;gap:5px;font-size:var(--f-cap);color:var(--ink-3);font-weight:600}
+#efhub .case-card .time svg{width:14px;height:14px}
+#efhub .case-card .learn{font-size:var(--f-sm);font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:5px}
+#efhub .case-card:hover .learn{color:#000}
+
+/* ======================= APP SHELL ======================= */
+#efhub .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+#efhub .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+#efhub .nav__in{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:22px}
+#efhub .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
+#efhub .brand:hover{color:var(--ink)}
+#efhub .brand .mk{width:26px;height:26px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff}
+#efhub .brand .mk svg{width:16px;height:16px}
+#efhub .nav__links{display:flex;gap:4px;margin-left:8px}
+#efhub .nav__links a{color:var(--ink-2);font-weight:600;font-size:var(--f-sm);padding:8px 12px;border-radius:var(--r-sm)}
+#efhub .nav__links a:hover{background:var(--surface-2);color:var(--ink)}
+#efhub .nav__links a.on{color:var(--ink);background:var(--surface-2)}
+#efhub .nav__right{margin-left:auto;display:flex;align-items:center;gap:10px}
+#efhub .nav__search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:8px 14px;color:var(--ink-3);font-size:var(--f-sm);cursor:pointer;min-width:230px;white-space:nowrap}
+#efhub .nav__search span{overflow:hidden;text-overflow:ellipsis}
+#efhub .nav__search:hover{border-color:var(--line-strong)}
+#efhub .nav__search svg{width:16px;height:16px}
+#efhub .nav__search kbd{margin-left:auto;font-size:11px;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:ui-monospace,Menlo,monospace}
+#efhub .nav__burger{display:none}
+
+/* ======================= SECTIONS ======================= */
+#efhub .sec{padding:46px 0}
+#efhub .sec--tight{padding:32px 0}
+#efhub .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+#efhub .sec-head .lead{max-width:var(--measure)}
+#efhub .sec-head h2{margin-bottom:6px}
+#efhub .sec-head p{color:var(--ink-2);font-size:var(--f-sm)}
+#efhub .link-more{font-weight:700;font-size:var(--f-sm);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+
+/* ---- HERO ---- */
+#efhub .hero{background:linear-gradient(180deg,#fff,var(--surface));border-bottom:1px solid var(--line)}
+#efhub .hero__in{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:56px 0 52px}
+#efhub .hero h1{margin-bottom:16px}
+#efhub .hero .sub{font-size:var(--f-h4);color:var(--ink-2);line-height:1.5;max-width:560px;margin-bottom:22px;font-weight:500}
+#efhub .proof{display:flex;gap:26px;margin-bottom:24px;flex-wrap:wrap}
+#efhub .proof .p b{display:block;font-size:32px;font-weight:800;line-height:1;letter-spacing:-.02em}
+#efhub .proof .p span{font-size:var(--f-cap);color:var(--ink-3);font-weight:600}
+#efhub .searchbar{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line-strong);
+  border-radius:var(--r-pill);padding:6px 6px 6px 18px;max-width:520px;margin-bottom:18px;box-shadow:var(--shadow-card)}
+#efhub .searchbar svg{width:19px;height:19px;color:var(--ink-3);flex:none}
+#efhub .searchbar input{flex:1;border:none;outline:none;font:inherit;font-size:var(--f-sm);background:transparent;color:var(--ink);min-width:0}
+#efhub .hero__cta{display:flex;gap:10px;flex-wrap:wrap}
+/* hero product preview (schematic indicator card — "показываем продукт") */
+#efhub .preview{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);overflow:hidden}
+#efhub .preview__top{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:var(--surface)}
+#efhub .preview__num{width:30px;height:30px;border-radius:8px;background:var(--k-ai-tint);color:var(--k-ai-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap)}
+#efhub .preview__b{padding:16px 18px}
+#efhub .preview__b .lab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin:12px 0 6px}
+#efhub .preview__b .lab:first-child{margin-top:0}
+#efhub .preview__b ul{margin:0;padding-left:16px;color:var(--ink-2);font-size:var(--f-sm)}
+#efhub .preview__b li{margin-bottom:3px}
+#efhub .mini-tabs{display:inline-flex;padding:3px;background:var(--surface-2);border-radius:var(--r-pill);gap:2px;margin-top:2px}
+#efhub .mini-tabs span{font-size:11px;font-weight:700;padding:5px 12px;border-radius:var(--r-pill);color:var(--ink-3)}
+#efhub .mini-tabs span.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,18,45,.12)}
+#efhub .preview__tag{position:absolute;font-size:11px}
+
+/* ---- competency grid ---- */
+#efhub .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* ---- popular strip ---- */
+#efhub .hstrip{display:flex;gap:16px;overflow-x:auto;padding:4px 24px 16px;margin:0 -24px;scroll-snap-type:x mandatory}
+#efhub .hstrip::-webkit-scrollbar{height:8px}
+#efhub .hstrip::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:8px}
+#efhub .hstrip .case-card{min-width:310px;max-width:310px;scroll-snap-align:start}
+
+/* ---- подборки ---- */
+#efhub .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+#efhub .tile{display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:120px;
+  padding:18px;border-radius:var(--r-md);background:#fff;border:1px solid var(--line);transition:all .16s var(--ease);color:var(--ink)}
+#efhub .tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop);color:var(--ink);border-color:var(--line-strong)}
+#efhub .tile .tt{font-weight:700;font-size:var(--f-sm);line-height:1.3}
+#efhub .tile .ar{width:30px;height:30px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--ink);align-self:flex-start}
+#efhub .tile .ar svg{width:16px;height:16px}
+
+/* ---- методика ---- */
+#efhub .method{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:m}
+#efhub .mstep{position:relative;padding:22px;background:#fff;border:1px solid var(--line);border-radius:var(--r-md)}
+#efhub .mstep .mn{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+#efhub .mstep h4{margin-bottom:6px}
+#efhub .mstep p{font-size:var(--f-sm);color:var(--ink-2)}
+#efhub .mstep .arrow{position:absolute;right:-19px;top:50%;transform:translateY(-50%);z-index:2;color:var(--line-strong);background:var(--surface);border-radius:50%}
+#efhub .mstep .arrow svg{width:22px;height:22px}
+
+/* ---- CTA + report (from design-system) ---- */
+#efhub .cta{position:relative;background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:34px;overflow:hidden}
+#efhub .cta .eyebrow{color:var(--accent-tint);opacity:.95}
+#efhub .cta h3{color:#fff;font-size:var(--f-h2);font-weight:800;letter-spacing:-.01em;margin:8px 0 10px;max-width:560px}
+#efhub .cta p{color:rgba(255,255,255,.72);max-width:560px;font-size:var(--f-sm)}
+#efhub .cta .cta__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+#efhub .cta__glow{position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(74,59,255,.55),transparent 70%);pointer-events:none}
+#efhub .ai-2col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+#efhub .ai-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0 22px}
+#efhub .ai-steps .st{display:flex;gap:12px;align-items:flex-start}
+#efhub .ai-steps .st .d{width:26px;height:26px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap);flex:none}
+#efhub .ai-steps .st p{font-size:var(--f-sm);color:var(--ink-2)}
+#efhub .report{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-pop);color:var(--ink)}
+#efhub .report__bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+#efhub .report__who{display:flex;align-items:center;gap:10px}
+#efhub .report__ava{width:34px;height:34px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap)}
+#efhub .report__badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--r-pill);background:var(--accent);color:#fff}
+#efhub .report__body{padding:16px 18px}
+#efhub .rrow{display:grid;grid-template-columns:minmax(0,1fr) 64px 82px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+#efhub .rrow .rname{font-size:var(--f-cap);font-weight:600;line-height:1.3;color:var(--ink)}
+#efhub .rbar{height:7px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden}
+#efhub .rbar span{display:block;height:100%;border-radius:var(--r-pill)}
+#efhub .rlvl{font-size:11px;font-weight:700;text-align:right}
+#efhub .rcols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+#efhub .rcol{padding:12px;border-radius:var(--r-md);font-size:var(--f-cap);line-height:1.45}
+#efhub .rcol.strong{background:var(--k-adapt-tint)} #efhub .rcol.grow{background:var(--k-team-tint)}
+#efhub .rcol h5{margin:0 0 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+#efhub .rcol.strong h5{color:var(--k-adapt-ink)} #efhub .rcol.grow h5{color:var(--k-team-ink)}
+#efhub .rcol ul{margin:0;padding-left:15px;color:var(--ink-2)} #efhub .rcol li{margin-bottom:3px}
+
+/* ---- FAQ ---- */
+#efhub .faq{max-width:820px;margin:0 auto}
+#efhub .qa{border-bottom:1px solid var(--line)}
+#efhub .qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;
+  padding:18px 0;background:none;border:none;cursor:pointer;font:inherit;font-size:var(--f-h4);font-weight:700;color:var(--ink)}
+#efhub .qa .qi{flex:none;color:var(--ink-3);transition:transform .2s var(--ease)}
+#efhub .qa[data-open="true"] .qi{transform:rotate(45deg)}
+#efhub .qa .ans{display:none;padding:0 0 18px;color:var(--ink-2);font-size:var(--f-sm);max-width:var(--measure)}
+#efhub .qa[data-open="true"] .ans{display:block}
+
+/* ---- footer ---- */
+#efhub .foot{background:var(--ink);color:rgba(255,255,255,.7);padding:40px 0}
+#efhub .foot__in{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+#efhub .foot .brand{color:#fff}
+#efhub .foot a{color:rgba(255,255,255,.7)} #efhub .foot a:hover{color:#fff}
+#efhub .foot__nav{display:flex;gap:36px;flex-wrap:wrap;font-size:var(--f-sm)}
+#efhub .foot__nav b{display:block;color:#fff;margin-bottom:8px;font-size:var(--f-cap);text-transform:uppercase;letter-spacing:.08em}
+#efhub .foot__nav a{display:block;margin-bottom:5px}
+
+/* ---- search overlay ---- */
+#efhub .ov{position:fixed;inset:0;z-index:60;display:none;background:rgba(20,18,45,.5);backdrop-filter:blur(4px);padding:80px 20px 20px}
+#efhub .ov.on{display:block}
+#efhub .ov__box{max-width:640px;margin:0 auto;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-pop);overflow:hidden;max-height:78vh;display:flex;flex-direction:column}
+#efhub .ov__in{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+#efhub .ov__in svg{width:20px;height:20px;color:var(--ink-3)}
+#efhub .ov__in input{flex:1;border:none;outline:none;font:inherit;font-size:var(--f-h4);background:transparent}
+#efhub .ov__in .esc{font-size:11px;background:var(--surface-2);border-radius:5px;padding:3px 7px;color:var(--ink-3);font-family:ui-monospace,Menlo,monospace}
+#efhub .ov__res{overflow-y:auto;padding:8px}
+#efhub .ov__grp{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:12px 12px 6px}
+#efhub .ov__item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);cursor:pointer}
+#efhub .ov__item:hover,#efhub .ov__item.sel{background:var(--surface)}
+#efhub .ov__item .oi-t{font-weight:600;font-size:var(--f-sm)}
+#efhub .ov__item .oi-s{font-size:var(--f-cap);color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#efhub .ov__empty{padding:26px 20px;text-align:center}
+#efhub .ov__empty p{color:var(--ink-2);font-size:var(--f-sm);margin-bottom:14px;max-width:420px;margin-inline:auto}
+
+/* ---- sticky mobile CTA ---- */
+#efhub .smcta{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  transform:translateY(120%);transition:transform .28s var(--ease);display:none}
+#efhub .smcta.on{transform:translateY(0)}
+
+/* ---- generic placeholder (routes built in later steps) ---- */
+#efhub .ph{max-width:640px;margin:60px auto;text-align:center;padding:40px;background:#fff;border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
+#efhub .ph .badge{display:inline-block;font-size:var(--f-cap);font-weight:700;color:var(--accent-ink);background:var(--accent-tint);padding:4px 12px;border-radius:var(--r-pill);margin-bottom:14px}
+
+/* ======================= COMPETENCY PAGE ======================= */
+#efhub .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:var(--f-cap);color:var(--ink-3);margin-bottom:16px}
+#efhub .crumbs a{color:var(--ink-3);font-weight:600} #efhub .crumbs a:hover{color:var(--ink)}
+#efhub .crumbs .sep{opacity:.5}
+#efhub .chead{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--surface))}
+#efhub .chead__in{padding:28px 0 30px}
+#efhub .chead h1{margin:12px 0 10px}
+#efhub .chead .sub{font-size:var(--f-h4);color:var(--ink-2);max-width:720px;margin-bottom:16px;font-weight:500;line-height:1.5}
+#efhub .cmetrics{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:var(--f-sm);color:var(--ink-3);font-weight:600;margin-bottom:20px}
+#efhub .cmetrics b{color:var(--ink)}
+#efhub .chead__cta{display:flex;gap:10px;flex-wrap:wrap}
+#efhub .clayout{display:grid;grid-template-columns:1fr 264px;gap:40px;align-items:start;padding:36px 0}
+#efhub .cmain{min-width:0;max-width:760px}
+#efhub .cblock{margin-bottom:36px;scroll-margin-top:76px}
+#efhub .cblock>h2{margin-bottom:14px}
+#efhub .cblock .measure p+p{margin-top:12px}
+#efhub .cblock .measure{color:var(--ink-2)}
+#efhub .whylist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+#efhub .whylist li{display:flex;gap:12px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);font-size:var(--f-sm);color:var(--ink-2)}
+#efhub .whylist li .bullet{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:8px}
+#efhub .applies{display:flex;flex-wrap:wrap;gap:8px}
+#efhub .applies .chip{background:var(--surface-2);color:var(--ink-2);font-weight:600;padding:7px 13px;font-size:var(--f-sm)}
+
+/* accordion */
+#efhub .acc{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--bg)}
+#efhub .acc+.acc{margin-top:10px}
+#efhub .acc__head{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:15px 18px;background:transparent;border:none;cursor:pointer;color:var(--ink);font:inherit}
+#efhub .acc__head:hover{background:var(--surface)}
+#efhub .acc__num{width:30px;height:30px;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font-size:var(--f-cap);font-weight:800;color:var(--ink-2);flex:none}
+#efhub .acc__t{flex:1;min-width:0}
+#efhub .acc__t .tt{font-size:var(--f-h4);font-weight:700;line-height:1.3}
+#efhub .acc__t .ts{font-size:var(--f-sm);color:var(--ink-3);line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#efhub .acc__chev{flex:none;color:var(--ink-3);transition:transform .2s var(--ease)}
+#efhub .acc[data-open="true"] .acc__chev{transform:rotate(180deg)}
+#efhub .acc__body{display:none;padding:2px 18px 20px 62px}
+#efhub .acc[data-open="true"] .acc__body{display:block}
+#efhub .acc__body>p{color:var(--ink-2);margin-bottom:12px}
+#efhub .acc__body .lab{font-size:var(--f-cap);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin:16px 0 7px}
+#efhub .acc__body ul{margin:0;padding-left:18px;color:var(--ink-2)}
+#efhub .acc__body li{margin-bottom:4px}
+#efhub .ltabs{display:inline-flex;padding:3px;background:var(--surface-2);border-radius:var(--r-pill);gap:2px;margin-top:4px}
+#efhub .ltab{font:inherit;font-size:var(--f-cap);font-weight:700;padding:7px 15px;border-radius:var(--r-pill);border:none;background:transparent;color:var(--ink-3);cursor:pointer;transition:all .15s}
+#efhub .ltab[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,18,45,.12)}
+#efhub .lpanel{margin-top:12px;padding:14px 16px;background:var(--surface);border-radius:var(--r-md);border-left:3px solid var(--line-strong);color:var(--ink-2);font-size:var(--f-sm);line-height:1.55}
+#efhub .lpanel[data-lvl="low"]{border-left-color:#c9c9d4}
+#efhub .lpanel[data-lvl="base"]{border-left-color:var(--k-crit)}
+#efhub .lpanel[data-lvl="adv"]{border-left-color:var(--k-adapt)}
+
+/* level summary table */
+#efhub .ltable{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:#fff}
+#efhub .ltrow{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;border-bottom:1px solid var(--line)}
+#efhub .ltrow:last-child{border-bottom:none}
+#efhub .ltrow.head{background:var(--surface)}
+#efhub .ltrow.head .lt-c{font-size:var(--f-cap);font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+#efhub .lt-c{padding:12px 14px;font-size:var(--f-cap);line-height:1.45;color:var(--ink-2);border-left:1px solid var(--line)}
+#efhub .lt-c:first-child{border-left:none}
+#efhub .lt-c.ind{font-weight:700;color:var(--ink);font-size:var(--f-sm);background:var(--surface)}
+#efhub .lt-c .m{display:none}
+#efhub .ltnote{font-size:var(--f-cap);color:var(--ink-3);margin-top:10px}
+
+/* local case filter on competency page */
+#efhub .cfilter{display:flex;flex-wrap:wrap;gap:16px 22px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:18px}
+#efhub .cfilter .grp{display:flex;flex-direction:column;gap:7px}
+#efhub .cfilter .grp>span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+#efhub .cfilter .opts{display:flex;flex-wrap:wrap;gap:6px}
+#efhub .pill{font:inherit;font-size:var(--f-cap);font-weight:600;padding:6px 12px;border-radius:var(--r-pill);border:1.5px solid var(--line-strong);background:#fff;color:var(--ink-2);cursor:pointer;transition:all .12s}
+#efhub .pill:hover{border-color:var(--ink-3)}
+#efhub .pill[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-tint);color:var(--accent-ink)}
+#efhub .ccase-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+#efhub .ccase-empty{padding:26px;text-align:center;border:1px dashed var(--line-strong);border-radius:var(--r-md);color:var(--ink-2);font-size:var(--f-sm)}
+
+/* inline commercial */
+#efhub .cta-inline{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--accent-tint);border:1px solid #d9d6ff;border-radius:var(--r-md);padding:20px 24px}
+#efhub .cta-inline .txt{font-weight:700;color:var(--accent-ink)}
+#efhub .cta-inline .txt span{display:block;font-weight:500;color:var(--ink-2);font-size:var(--f-sm)}
+
+/* sticky TOC */
+#efhub .toc{position:sticky;top:76px}
+#efhub .toc__card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-card)}
+#efhub .toc__card .eyebrow{margin-bottom:10px}
+#efhub .toc__card a{display:block;font-size:var(--f-sm);color:var(--ink-2);font-weight:600;padding:6px 0;border-radius:6px}
+#efhub .toc__card a:hover{color:var(--ink)}
+#efhub .toc__card a.on{color:var(--accent-ink)}
+#efhub .toc__card .btn{margin-top:14px}
+#efhub .related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+#efhub .rel-card{display:flex;flex-direction:column;gap:8px;padding:18px;cursor:pointer}
+#efhub .rel-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+#efhub .rel-card .rc-go{margin-top:auto;font-size:var(--f-sm);font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:5px}
+
+@media(max-width:960px){
+  #efhub .clayout{grid-template-columns:1fr;gap:0}
+  #efhub .toc{display:none}
+  #efhub .cmain{max-width:none}
+  #efhub .ccase-grid,#efhub .related-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:680px){
+  #efhub .ccase-grid,#efhub .related-grid{grid-template-columns:1fr}
+  #efhub .ltrow.head{display:none}
+  #efhub .ltrow{grid-template-columns:1fr;border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:12px}
+  #efhub .lt-c{border-left:none;border-top:1px solid var(--line)}
+  #efhub .lt-c:first-child{border-top:none}
+  #efhub .lt-c.ind{border-radius:var(--r-md) var(--r-md) 0 0}
+  #efhub .lt-c .m{display:inline-block;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+  #efhub .lt-c.lv-low .m{color:var(--ink-3)} #efhub .lt-c.lv-base .m{color:var(--k-crit-ink)} #efhub .lt-c.lv-adv .m{color:var(--k-adapt-ink)}
+}
+
+/* ======================= CASES CATALOG ======================= */
+#efhub .cat__head{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--surface));padding:28px 0 26px}
+#efhub .cat__head h1{margin:10px 0 8px}
+#efhub .cat__head p{color:var(--ink-2);font-size:var(--f-h4);max-width:640px;font-weight:500}
+#efhub .cat{display:grid;grid-template-columns:256px 1fr;gap:32px;align-items:start;padding:28px 0 60px}
+#efhub .fpanel{position:sticky;top:76px}
+#efhub .fpanel__card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-card);overflow:hidden}
+#efhub .fpanel__top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+#efhub .fpanel__top b{font-size:var(--f-sm)}
+#efhub .fpanel__reset{font-size:var(--f-cap);font-weight:700;color:var(--accent-ink);background:none;border:none;cursor:pointer}
+#efhub .fpanel__reset[disabled]{color:var(--ink-3);opacity:.5;cursor:default}
+#efhub .fgrp{border-bottom:1px solid var(--line)}
+#efhub .fgrp:last-child{border-bottom:none}
+#efhub .fgrp__h{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:none;border:none;cursor:pointer;font:inherit;font-size:var(--f-sm);font-weight:700;color:var(--ink)}
+#efhub .fgrp__h .cnt{font-size:var(--f-cap);font-weight:700;color:#fff;background:var(--accent);border-radius:var(--r-pill);padding:1px 8px;margin-left:auto;margin-right:8px}
+#efhub .fgrp__h svg{width:16px;height:16px;color:var(--ink-3);transition:transform .2s var(--ease)}
+#efhub .fgrp[data-open="false"] .fgrp__h svg{transform:rotate(-90deg)}
+#efhub .fgrp__b{padding:0 10px 10px}
+#efhub .fgrp[data-open="false"] .fgrp__b{display:none}
+#efhub .fval{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;font-size:var(--f-sm);padding:7px 8px;border-radius:var(--r-sm);background:transparent;border:none;cursor:pointer;color:var(--ink-2);transition:background .12s}
+#efhub .fval:hover{background:var(--surface)}
+#efhub .fval .box{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line-strong);flex:none;display:grid;place-items:center;background:#fff}
+#efhub .fval .box svg{width:12px;height:12px;color:#fff;opacity:0}
+#efhub .fval .cnt{margin-left:auto;font-size:var(--f-cap);color:var(--ink-3);font-weight:600}
+#efhub .fval[aria-checked="true"]{color:var(--ink);font-weight:600}
+#efhub .fval[aria-checked="true"] .box{background:var(--accent);border-color:var(--accent)}
+#efhub .fval[aria-checked="true"] .box svg{opacity:1}
+#efhub .fval[disabled]{opacity:.4;cursor:not-allowed}
+#efhub .fval[disabled]:hover{background:transparent}
+
+#efhub .catmain{min-width:0}
+#efhub .cattop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+#efhub .catcount{font-size:var(--f-sm);color:var(--ink-2);font-weight:600}
+#efhub .catcount b{color:var(--ink)}
+#efhub .catsort{display:flex;align-items:center;gap:8px}
+#efhub .catsort select{font:inherit;font-size:var(--f-cap);font-weight:600;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:var(--r-pill);background:#fff;color:var(--ink);cursor:pointer}
+#efhub .achips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+#efhub .achip{display:inline-flex;align-items:center;gap:7px;font-size:var(--f-cap);font-weight:600;padding:5px 6px 5px 11px;border-radius:var(--r-pill);background:var(--accent-tint);color:var(--accent-ink);border:1px solid #d9d6ff}
+#efhub .achip button{display:grid;place-items:center;width:18px;height:18px;border:none;border-radius:50%;background:rgba(44,34,184,.12);color:var(--accent-ink);cursor:pointer;padding:0}
+#efhub .achip button:hover{background:rgba(44,34,184,.22)}
+#efhub .achip button svg{width:11px;height:11px}
+#efhub .achips .clearall{font-size:var(--f-cap);font-weight:700;color:var(--accent-ink);background:none;border:none;cursor:pointer}
+#efhub .catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+#efhub .catempty{grid-column:1/-1;text-align:center;padding:48px 24px;background:#fff;border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
+#efhub .catempty .ic{width:52px;height:52px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;margin:0 auto 14px;color:var(--ink-3)}
+#efhub .catempty h3{margin-bottom:8px}
+#efhub .catempty p{color:var(--ink-2);font-size:var(--f-sm);max-width:440px;margin:0 auto 18px}
+#efhub .catempty .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* mobile filter trigger + bottom-sheet */
+#efhub .fbar{display:none;position:sticky;top:60px;z-index:20;background:var(--surface);padding:10px 0;gap:8px}
+#efhub .fbar .btn{flex:1}
+#efhub .fbar .fbtn{position:relative}
+#efhub .fbar .fbtn .cnt{position:absolute;top:-6px;right:-6px;font-size:11px;font-weight:800;background:var(--accent);color:#fff;border-radius:var(--r-pill);min-width:18px;height:18px;display:grid;place-items:center;padding:0 4px}
+#efhub .sheet{position:fixed;inset:0;z-index:70;display:none}
+#efhub .sheet.on{display:block}
+#efhub .sheet__bg{position:absolute;inset:0;background:rgba(20,18,45,.5);backdrop-filter:blur(3px)}
+#efhub .sheet__panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;background:#fff;border-radius:20px 20px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s var(--ease)}
+#efhub .sheet.on .sheet__panel{transform:translateY(0)}
+#efhub .sheet__top{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 8px}
+#efhub .sheet__grab{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:40px;height:4px;border-radius:4px;background:var(--line-strong)}
+#efhub .sheet__body{overflow-y:auto;padding:0 8px}
+#efhub .sheet__foot{padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:10px}
+#efhub .sheet__foot .btn{flex:1}
+
+@media(max-width:960px){
+  #efhub .cat{grid-template-columns:1fr;gap:0}
+  #efhub .fpanel{display:none}
+  #efhub .fbar{display:flex}
+  #efhub .catgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:680px){
+  #efhub .catgrid{grid-template-columns:1fr}
+  #efhub .cat__head p{font-size:var(--f-sm)}
+}
+
+/* ======================= CASE PAGE ======================= */
+#efhub .case__head{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--surface));padding:26px 0 28px}
+#efhub .case__head h1{font-size:clamp(26px,3.4vw,36px);font-weight:800;line-height:1.12;letter-spacing:-.02em;margin:12px 0 14px;max-width:820px}
+#efhub .case__meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#efhub .case__meta .time{display:inline-flex;align-items:center;gap:5px;font-size:var(--f-cap);color:var(--ink-3);font-weight:600}
+#efhub .case__meta .time svg{width:14px;height:14px}
+#efhub .caselayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:start;padding:34px 0 60px}
+#efhub .casebody{min-width:0;max-width:720px;font-size:18px;line-height:1.6}
+#efhub .casebody h2{font-size:var(--f-h3);font-weight:700;margin:30px 0 12px;letter-spacing:-.01em}
+#efhub .casebody>section:first-child h2{margin-top:0}
+#efhub .casebody p{color:var(--ink-2)}
+#efhub .frame{border:1px solid var(--line);border-left:4px solid var(--k-ai);border-radius:var(--r-md);padding:18px 20px;background:#fff;margin:8px 0}
+#efhub .frame .rl{font-size:var(--f-cap);font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:6px}
+#efhub .frame p{color:var(--ink);font-size:var(--f-sm)}
+#efhub .frame+.frame{margin-top:12px}
+#efhub .inputlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+#efhub .inputlist li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:var(--f-sm);color:var(--ink-2)}
+#efhub .inputlist li:last-child{border-bottom:none}
+#efhub .inputlist li .n{flex:none;width:24px;height:24px;border-radius:7px;background:var(--surface-2);color:var(--ink-2);display:grid;place-items:center;font-size:var(--f-cap);font-weight:800}
+#efhub .constraints{display:flex;flex-wrap:wrap;gap:8px}
+#efhub .constraint{display:inline-flex;align-items:center;gap:7px;font-size:var(--f-sm);font-weight:600;padding:8px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
+#efhub .constraint svg{width:16px;height:16px;color:var(--ink-3);flex:none}
+#efhub .checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+#efhub .checks li a{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);color:var(--ink);font-size:var(--f-sm);font-weight:600;transition:all .14s var(--ease)}
+#efhub .checks li a:hover{border-color:var(--k-ai);background:var(--k-ai-tint);color:var(--k-ai-ink)}
+#efhub .checks li a .ci{flex:none;width:26px;height:26px;border-radius:7px;background:var(--k-ai-tint);color:var(--k-ai-ink);display:grid;place-items:center;font-size:11px;font-weight:800}
+#efhub .checks li a .go{margin-left:auto;color:var(--ink-3)}
+#efhub .fmt{padding:14px 16px;background:var(--surface);border-radius:var(--r-md);font-size:var(--f-sm);color:var(--ink-2)}
+#efhub .caseactions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+#efhub .case-aside{position:sticky;top:76px;display:flex;flex-direction:column;gap:16px}
+#efhub .case-cta{background:var(--ink);color:#fff;border-radius:var(--r-md);padding:22px;position:relative;overflow:hidden}
+#efhub .case-cta .eyebrow{color:var(--accent-tint)}
+#efhub .case-cta h3{color:#fff;font-size:var(--f-h4);font-weight:800;margin:8px 0 8px}
+#efhub .case-cta p{color:rgba(255,255,255,.72);font-size:var(--f-cap);margin-bottom:16px}
+#efhub .case-cta .glow{position:absolute;right:-40px;bottom:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(74,59,255,.5),transparent 70%)}
+#efhub .aside-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:18px;box-shadow:var(--shadow-card)}
+#efhub .aside-card .eyebrow{margin-bottom:10px}
+#efhub .aside-card .krow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:var(--f-sm)}
+#efhub .aside-card .krow:last-child{border-bottom:none}
+#efhub .aside-card .krow span{color:var(--ink-3)} #efhub .aside-card .krow b{font-weight:600;text-align:right}
+#efhub .variants{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+#efhub .variant{display:flex;flex-direction:column;gap:8px;padding:16px;cursor:pointer}
+#efhub .variant:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+#efhub .variant .vdiff{font-size:var(--f-cap);font-weight:700;color:var(--accent-ink);background:var(--accent-tint);padding:3px 9px;border-radius:var(--r-pill);align-self:flex-start}
+#efhub .variant h4{font-size:var(--f-sm);font-weight:700;line-height:1.3}
+#efhub .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:var(--r-pill);font-size:var(--f-sm);font-weight:600;opacity:0;pointer-events:none;transition:all .25s var(--ease);z-index:90}
+#efhub .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:960px){
+  #efhub .caselayout{grid-template-columns:1fr;gap:24px}
+  #efhub .case-aside{position:static;order:-1}
+  #efhub .casebody{max-width:none}
+}
+@media(max-width:680px){
+  #efhub .casebody{font-size:16px}
+  #efhub .variants{grid-template-columns:1fr}
+}
+
+/* ======================= LEAD MODAL ======================= */
+#efhub .backdrop{position:fixed;inset:0;background:rgba(20,18,45,.55);display:none;z-index:80;padding:20px;backdrop-filter:blur(3px);overflow-y:auto}
+#efhub .backdrop.on{display:flex;align-items:flex-start;justify-content:center}
+#efhub .modal{width:min(560px,100%);margin:auto;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-pop);overflow:hidden}
+#efhub .modal__top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:22px 24px 8px}
+#efhub .modal__x{border:none;background:var(--surface-2);width:32px;height:32px;border-radius:50%;cursor:pointer;display:grid;place-items:center;color:var(--ink-2);flex:none}
+#efhub .modal__x:hover{background:var(--line-strong)}
+#efhub .modal__steps{display:flex;gap:6px;padding:0 24px 14px}
+#efhub .modal__steps .s{flex:1;height:4px;border-radius:var(--r-pill);background:var(--surface-2)}
+#efhub .modal__steps .s.on{background:var(--accent)}
+#efhub .modal__b{padding:4px 24px 24px}
+#efhub .field{margin-bottom:14px}
+#efhub .field label{display:block;font-size:var(--f-cap);font-weight:700;margin-bottom:6px;color:var(--ink-2)}
+#efhub .field label .req{color:var(--k-comm)}
+#efhub .field input,#efhub .field textarea,#efhub .field select{width:100%;font:inherit;font-size:var(--f-sm);padding:11px 13px;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);background:#fff;color:var(--ink)}
+#efhub .field textarea{resize:vertical;min-height:72px}
+#efhub .field input:focus,#efhub .field textarea:focus,#efhub .field select:focus{border-color:var(--accent);outline:none}
+#efhub .field .hint{font-size:var(--f-cap);color:var(--ink-3);margin-top:5px}
+#efhub .field .hint.warn{color:var(--k-comm-ink)}
+#efhub .field .hint.err{color:#c0392b;font-weight:600}
+#efhub .field.invalid input,#efhub .field.invalid textarea{border-color:#c0392b}
+#efhub .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#efhub .seg{display:flex;flex-wrap:wrap;gap:7px}
+#efhub .seg button{font:inherit;font-size:var(--f-cap);font-weight:600;padding:8px 13px;border-radius:var(--r-pill);border:1.5px solid var(--line-strong);background:#fff;color:var(--ink-2);cursor:pointer}
+#efhub .seg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-tint);color:var(--accent-ink)}
+#efhub .checkbox{display:flex;gap:10px;align-items:flex-start;font-size:var(--f-cap);color:var(--ink-2);cursor:pointer}
+#efhub .checkbox input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:var(--accent)}
+#efhub .modal__foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px}
+#efhub .lead-ctx{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--surface);border-radius:var(--r-md);margin-bottom:16px}
+#efhub .success{text-align:center;padding:14px 4px}
+#efhub .success .sok{width:60px;height:60px;border-radius:50%;background:var(--k-adapt-tint);color:var(--k-adapt-ink);display:grid;place-items:center;margin:0 auto 16px}
+#efhub .success .sok svg{width:30px;height:30px}
+#efhub .success h3{margin-bottom:8px}
+#efhub .success .sctx{background:var(--surface);border-radius:var(--r-md);padding:14px;margin:16px 0;text-align:left;font-size:var(--f-sm)}
+#efhub .success .sctx div{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+#efhub .success .sctx div span{color:var(--ink-3)}
+#efhub .success .snext{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+
+/* skeletons */
+#efhub .sk{background:linear-gradient(100deg,var(--surface-2) 30%,#f4f4f8 50%,var(--surface-2) 70%);background-size:200% 100%;animation:efsh 1.3s infinite linear;border-radius:8px}
+@keyframes efsh{to{background-position:-200% 0}}
+
+/* ======================= RESPONSIVE ======================= */
+@media(max-width:960px){
+  #efhub .hero__in{grid-template-columns:1fr;gap:32px}
+  #efhub .hero .preview{max-width:460px}
+  #efhub .comp-grid{grid-template-columns:repeat(2,1fr)}
+  #efhub .tiles{grid-template-columns:repeat(2,1fr)}
+  #efhub .method{grid-template-columns:1fr}
+  #efhub .mstep .arrow{display:none}
+  #efhub .ai-2col{grid-template-columns:1fr;gap:20px}
+}
+@media(max-width:680px){
+  #efhub .wrap{padding:0 16px}
+  #efhub .nav__in{padding:10px 16px;gap:12px}
+  #efhub .nav__links{display:none}
+  #efhub .nav__search{min-width:0;padding:9px}
+  #efhub .nav__search span,#efhub .nav__search kbd{display:none}
+  #efhub .nav__right .btn{display:none}
+  #efhub .nav__burger{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+  #efhub .comp-grid{grid-template-columns:1fr}
+  #efhub .tiles{grid-template-columns:1fr}
+  #efhub .sec{padding:34px 0}
+  #efhub .hero__in{padding:36px 0}
+  #efhub .proof{gap:18px}
+  #efhub .rcols{grid-template-columns:1fr}
+  #efhub .smcta{display:block}
+}
+</style>
+</head>
+<body>
+<div id="efhub">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__in">
+      <a class="brand" href="#/competencies"><span class="mk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L13.5 10.5 24 12 13.5 13.5 12 24 10.5 13.5 0 12 10.5 10.5z"/></svg></span>emplyflow</a>
+      <div class="nav__links" id="navLinks">
+        <a href="#/competencies" data-nav="competencies">Компетенции</a>
+        <a href="#/cases" data-nav="cases">Кейсы</a>
+        <a href="#/competencies/methodology" data-nav="methodology">Методика</a>
+      </div>
+      <div class="nav__right">
+        <button class="nav__search" id="searchTrigger" aria-label="Поиск">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <span>Поиск по библиотеке</span><kbd>/</kbd>
+        </button>
+        <button class="btn btn--accent btn--sm" data-lead='{"source":"nav"}'>Запросить оценку</button>
+        <button class="nav__burger" id="burger" aria-label="Меню"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="view"><!-- routed content --></main>
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <div class="wrap foot__in">
+      <div style="max-width:280px">
+        <a class="brand" href="#/competencies" style="margin-bottom:12px"><span class="mk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L13.5 10.5 24 12 13.5 13.5 12 24 10.5 13.5 0 12 10.5 10.5z"/></svg></span>emplyflow</a>
+        <p class="sm" style="color:rgba(255,255,255,.6)">Библиотека компетенций и кейсов. Верх воронки платформы AI-оценки EmplyFlow.</p>
+      </div>
+      <div class="foot__nav">
+        <div><b>Библиотека</b><a href="#/competencies">Компетенции</a><a href="#/cases">Все кейсы</a><a href="#/competencies/methodology">Методика</a></div>
+        <div><b>Оценка</b><a data-lead='{"source":"footer"}'>Запросить оценку</a><a data-lead='{"source":"footer_custom"}'>Кейс под компанию</a></div>
+        <div><b>Контакты</b><a href="mailto:hello@emplyflow.ru">hello@emplyflow.ru</a><a href="https://emplyflow.ru" target="_blank" rel="noopener">emplyflow.ru</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STICKY MOBILE CTA -->
+  <div class="smcta" id="smcta"><button class="btn btn--accent btn--block" data-lead='{"source":"sticky_bar"}'>Пройти AI-тестирование</button></div>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="ov" id="searchOv">
+    <div class="ov__box">
+      <div class="ov__in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input id="searchInput" placeholder="делегирование, промпт, конфликт в команде…" autocomplete="off">
+        <span class="esc">esc</span>
+      </div>
+      <div class="ov__res" id="searchRes"></div>
+    </div>
+  </div>
+
+  <!-- LEAD MODAL -->
+  <div class="backdrop" id="leadBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="Заявка на AI-тестирование" id="leadModal"></div></div>
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="hub-data.js"></script>
+<script>
+(function(){
+  var D = window.HUB_DATA;
+  var view = document.getElementById('view');
+  var COMP = {}; D.competencies.forEach(function(c){COMP[c.id]=c;});
+  var CASE = {}; D.cases.forEach(function(c){CASE[c.id]=c;});
+  function labelName(id){return {universal:'Универсальный',it:'IT и цифровые продукты',industry:'Промышленность',retail:'Ритейл',finance:'Финансовые услуги',prof:'Профессиональные услуги',gov:'Госсектор'}[id]||id;}
+  function roleName(r){return {spec:'Специалист',head:'Руководитель',senior:'Старший руководитель'}[r]||r;}
+  function diffName(d){return {base:'Базовый',adv:'Продвинутый',expert:'Экспертный'}[d]||d;}
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var clockSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  var arrowSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  /* ---------- reusable card renderers [REUSE across screens/steps] ---------- */
+  function caseCard(c){
+    var comp=COMP[c.comp];
+    var chips=[roleName(c.role),labelName(c.industry[0]),diffName(c.difficulty)];
+    return '<article class="card case-card" data-go="#/cases/'+c.id+'">'
+      +'<span class="klabel k-'+comp.color+'"><span class="kdot"></span>'+esc(comp.title)+'</span>'
+      +'<h4>'+esc(c.title)+'</h4>'
+      +'<p class="cdesc">'+esc(c.sd)+'</p>'
+      +'<div class="chips">'+chips.map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join('')+'</div>'
+      +'<div class="cfoot"><span class="time">'+clockSVG+c.duration+' мин</span><span class="learn">Изучить кейс →</span></div>'
+    +'</article>';
+  }
+  function compCard(c){
+    return '<article class="card comp-card" data-go="#/competencies/'+c.id+'">'
+      +'<div class="accent-edge" style="background:var(--k-'+c.color+')"></div>'
+      +'<span class="klabel k-'+c.color+'" style="align-self:flex-start"><span class="kdot"></span>'+esc(c.title)+'</span>'
+      +'<h3>'+esc(c.title)+'</h3>'
+      +'<p class="desc">'+esc(c.short)+'</p>'
+      +'<div class="meta"><span><b>'+c.indicatorCount+'</b> индикаторов</span><span><b>'+c.caseCount+'</b> кейсов</span><span>'+esc(c.roles)+'</span></div>'
+      +'<div class="actions">'
+        +'<a class="btn btn--neutral btn--sm" href="#/competencies/'+c.id+'">Изучить компетенцию</a>'
+        +'<button class="btn btn--accent btn--sm" data-lead=\'{"source":"catalog","competency":"'+c.id+'"}\'>Пройти AI-тестирование</button>'
+      +'</div>'
+    +'</article>';
+  }
+
+  /* ======================= HOME (Hub) ======================= */
+  function renderHome(){
+    var s=D.stats;
+    var comps=D.competencies.map(compCard).join('');
+    var pop=D.popular.map(function(id){return caseCard(CASE[id]);}).join('');
+    var faq=D.faq.map(function(q,i){return '<div class="qa" data-open="'+(i===0?'true':'false')+'"><button aria-expanded="'+(i===0)+'" data-faq>'+esc(q[0])+'<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans">'+esc(q[1])+'</div></div>';}).join('');
+    var tiles=[
+      ['Кейсы для руководителей','#/cases?role=head'],
+      ['Оценка ИИ-навыков','#/cases?competency=ai-readiness'],
+      ['Конфликты и сложные разговоры','#/cases?situation=conflict'],
+      ['Для промышленности','#/cases?industry=industry'],
+      ['Кейсы на 5 минут','#/cases?duration=5']
+    ].map(function(t){return '<a class="tile" href="'+t[1]+'"><span class="tt">'+t[0]+'</span><span class="ar">'+arrowSVG+'</span></a>';}).join('');
+
+    view.innerHTML =
+    /* HERO */
+    '<section class="hero"><div class="wrap"><div class="hero__in">'
+      +'<div>'
+        +'<div class="eyebrow" style="margin-bottom:14px">Публичная библиотека · бесплатно</div>'
+        +'<h1 class="h-hero">Библиотека компетенций и кейсов EmplyFlow</h1>'
+        +'<p class="sub">Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.</p>'
+        +'<div class="proof">'
+          +'<div class="p"><b>'+s.competencies+'</b><span>компетенций</span></div>'
+          +'<div class="p"><b>'+s.indicators+'</b><span>индикаторов</span></div>'
+          +'<div class="p"><b>'+s.cases+'</b><span>готовых кейсов</span></div>'
+        +'</div>'
+        +'<div class="searchbar" id="heroSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="делегирование, промпт, конфликт в команде…" readonly></div>'
+        +'<div class="hero__cta">'
+          +'<a class="btn btn--neutral" href="#compCatalog">Смотреть компетенции</a>'
+          +'<button class="btn btn--ghost" data-lead=\'{"source":"hero"}\'>Запросить оценку сотрудников</button>'
+        +'</div>'
+      +'</div>'
+      /* product preview — schematic indicator card */
+      +'<div class="preview">'
+        +'<div class="preview__top"><span class="preview__num">И3</span><div><div style="font-weight:700;font-size:var(--f-sm)">Ставит задачу ИИ: промпт-мышление</div><div class="cap">Готовность к использованию ИИ</div></div></div>'
+        +'<div class="preview__b">'
+          +'<div class="lab">Как это выглядит в работе</div>'
+          +'<ul><li>Задаёт роль, контекст, цель, формат, ограничения</li><li>Переформулирует, если результат не подошёл</li></ul>'
+          +'<div class="lab">Уровни проявления</div>'
+          +'<div class="mini-tabs"><span>Низкий</span><span>Базовый</span><span class="on">Продвинутый</span></div>'
+          +'<p class="sm muted" style="margin-top:10px">Запрос структурирован: контекст, цель, формат, критерии, ограничения. При неудачном результате меняет постановку, а не повторяет её.</p>'
+        +'</div>'
+      +'</div>'
+    +'</div></div></section>'
+
+    /* CATALOG */
+    +'<section class="sec" id="compCatalog"><div class="wrap">'
+      +'<div class="sec-head"><div class="lead"><h2 class="h2">Каталог компетенций</h2><p>Пять моделей, готовых к применению. «Изучить» — бесплатно, «Пройти AI-тестирование» — оценка сотрудника на платформе.</p></div></div>'
+      +'<div class="comp-grid">'+comps+'</div>'
+    +'</div></section>'
+
+    /* POPULAR */
+    +'<section class="sec sec--tight" style="background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">'
+      +'<div class="sec-head"><div class="lead"><h2 class="h2">Популярные кейсы</h2><p>Рабочие ситуации, которые чаще всего изучают HR за последние 30 дней.</p></div><a class="link-more" href="#/cases">Все 40 кейсов '+arrowSVG+'</a></div>'
+      +'<div class="hstrip">'+pop+'</div>'
+    +'</div></section>'
+
+    /* ПОДБОРКИ */
+    +'<section class="sec"><div class="wrap">'
+      +'<div class="sec-head"><div class="lead"><h2 class="h2">Быстрые входы</h2><p>Не знаете, с чего начать? Готовые подборки под частые задачи.</p></div></div>'
+      +'<div class="tiles">'+tiles+'</div>'
+    +'</div></section>'
+
+    /* МЕТОДИКА */
+    +'<section class="sec" style="background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">'
+      +'<div class="sec-head"><div class="lead"><h2 class="h2">Методика EmplyFlow</h2><p>Почему это не «тест из интернета»: каждый кейс собран по одной цепочке.</p></div><a class="link-more" href="#/competencies/methodology">Подробно о методике '+arrowSVG+'</a></div>'
+      +'<div class="method">'
+        +'<div class="mstep"><div class="mn">1</div><h4>Компетенция</h4><p>Что именно оцениваем и почему это важно в 2026 году — модель, а не набор вопросов.</p><span class="arrow">'+arrowSVG+'</span></div>'
+        +'<div class="mstep"><div class="mn">2</div><h4>Поведенческие индикаторы</h4><p>6–7 наблюдаемых проявлений с описанием трёх уровней — что видно в работе.</p><span class="arrow">'+arrowSVG+'</span></div>'
+        +'<div class="mstep"><div class="mn">3</div><h4>Рабочая ситуация</h4><p>Реалистичный кейс, где эти индикаторы проявляются в действии, а не в словах.</p></div>'
+      +'</div>'
+    +'</div></section>'
+
+    /* AI BLOCK + REPORT */
+    +'<section class="sec"><div class="wrap"><div class="cta"><div class="cta__glow"></div>'
+      +'<div class="ai-2col">'
+        +'<div>'
+          +'<div class="eyebrow">AI-тестирование · Кейси</div>'
+          +'<h3>Прочитать компетенцию мало. Её можно измерить у сотрудника.</h3>'
+          +'<div class="ai-steps">'
+            +'<div class="st"><span class="d">1</span><p style="color:rgba(255,255,255,.8)">Кейси проводит интервью по кейсам и задаёт уточняющие вопросы.</p></div>'
+            +'<div class="st"><span class="d">2</span><p style="color:rgba(255,255,255,.8)">Оценивает поведение по индикаторам компетенции.</p></div>'
+            +'<div class="st"><span class="d">3</span><p style="color:rgba(255,255,255,.8)">Собирает персональный отчёт с сильными сторонами и зонами развития.</p></div>'
+          +'</div>'
+          +'<button class="btn btn--accent" data-lead=\'{"source":"hub_ai"}\'>Запросить оценку сотрудников</button>'
+        +'</div>'
+        +'<div class="report">'
+          +'<div class="report__bar"><div class="report__who"><div class="report__ava">А.</div><div><div style="font-weight:700;font-size:var(--f-sm);color:var(--ink)">Аналитик · обезличенный отчёт</div><div class="cap">Готовность к использованию ИИ</div></div></div><span class="report__badge">Фрагмент</span></div>'
+          +'<div class="report__body">'
+            +'<div class="rrow"><div class="rname">Понимает возможности и ограничения ИИ</div><div class="rbar"><span style="width:82%;background:var(--k-adapt)"></span></div><div class="rlvl" style="color:var(--k-adapt-ink)">Продвинутый</div></div>'
+            +'<div class="rrow"><div class="rname">Ставит задачу ИИ: промпт-мышление</div><div class="rbar"><span style="width:60%;background:var(--k-crit)"></span></div><div class="rlvl" style="color:var(--k-crit-ink)">Базовый</div></div>'
+            +'<div class="rrow"><div class="rname">Проверяет результат работы ИИ</div><div class="rbar"><span style="width:80%;background:var(--k-adapt)"></span></div><div class="rlvl" style="color:var(--k-adapt-ink)">Продвинутый</div></div>'
+            +'<div class="rrow"><div class="rname">Учитывает безопасность данных</div><div class="rbar"><span style="width:36%;background:var(--k-team)"></span></div><div class="rlvl" style="color:var(--k-team-ink)">Низкий</div></div>'
+            +'<div class="rcols"><div class="rcol strong"><h5>Сильные стороны</h5><ul><li>Делит задачу на «отдам модели» и «оставлю за собой».</li><li>Описывает процедуру проверки цифр.</li></ul></div><div class="rcol grow"><h5>Зоны развития</h5><ul><li>Не поднимает вопрос контура инструмента.</li><li>Промпт без критериев качества.</li></ul></div></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div></div></section>'
+
+    /* FAQ */
+    +'<section class="sec" style="background:var(--bg);border-top:1px solid var(--line)"><div class="wrap">'
+      +'<div class="sec-head" style="justify-content:center;text-align:center"><div class="lead"><h2 class="h2">Частые вопросы</h2></div></div>'
+      +'<div class="faq">'+faq+'</div>'
+      +'<div style="text-align:center;margin-top:32px"><p class="muted sm" style="margin-bottom:14px">Готовы измерить компетенции у своих сотрудников?</p><button class="btn btn--accent" data-lead=\'{"source":"faq"}\'>Запросить оценку сотрудников</button></div>'
+    +'</div></section>';
+
+    setMeta('Библиотека компетенций и кейсов EmplyFlow','Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.');
+  }
+
+  /* ======================= COMPETENCY PAGE [REUSE: this template generates all 5 competency pages; later each can move to its own Tilda page with own URL/SEO] ======================= */
+  var chevSVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+  var cCaseState=null, cCaseComp=null;
+
+  function indAcc(ind,i){
+    return '<div class="acc" data-open="'+(i===0)+'">'
+      +'<button class="acc__head" data-acc aria-expanded="'+(i===0)+'">'
+        +'<span class="acc__num">'+ind.n+'</span>'
+        +'<span class="acc__t"><span class="tt">'+esc(ind.title)+'</span><span class="ts">'+esc(ind.short)+'</span></span>'
+        +'<span class="acc__chev">'+chevSVG+'</span>'
+      +'</button>'
+      +'<div class="acc__body">'
+        +'<p>'+esc(ind.desc)+'</p>'
+        +((ind.behaviour&&ind.behaviour.length)?('<div class="lab">Как это выглядит в работе</div><ul>'+ind.behaviour.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul>'):'')
+        +(ind.work?('<div class="lab">Связь с рабочими задачами</div><p style="margin-bottom:0">'+esc(ind.work)+'</p>'):'')
+        +'<div class="lab">Уровни проявления</div>'
+        +'<div class="ltabs" role="tablist">'
+          +'<button class="ltab" role="tab" data-ltab="low" aria-selected="false">Низкий</button>'
+          +'<button class="ltab" role="tab" data-ltab="base" aria-selected="true">Базовый</button>'
+          +'<button class="ltab" role="tab" data-ltab="adv" aria-selected="false">Продвинутый</button>'
+        +'</div>'
+        +'<div class="lpanel" data-lvl="base">'+esc(ind.levels.base)+'</div>'
+        +'<span hidden data-low="'+encodeURIComponent(ind.levels.low)+'" data-base="'+encodeURIComponent(ind.levels.base)+'" data-adv="'+encodeURIComponent(ind.levels.adv)+'"></span>'
+      +'</div></div>';
+  }
+
+  function renderCompetency(id){
+    var c=COMP[id]; if(!c){renderHome();return;}
+    var full=!!(c.indicators&&c.indicators.length);
+    cCaseComp=id; cCaseState={role:[],industry:[],difficulty:[]};
+
+    var toc=[];
+    if(full){toc.push(['about','Что это'],['why','Почему это важно'],['indicators','Индикаторы'],['levels','Уровни']);}
+    toc.push(['cases','Кейсы'],['related','Смежные']);
+    var tocHTML=toc.map(function(t){return '<a href="#'+t[0]+'" data-toclink="'+t[0]+'">'+t[1]+'</a>';}).join('');
+
+    var blocks='';
+    if(full){
+      blocks+='<section class="cblock" id="about"><h2 class="h2">Что это за компетенция</h2><div class="measure"><p>'+esc(c.full)+'</p></div></section>';
+      blocks+='<section class="cblock" id="why"><h2 class="h2">Почему это важно оценивать</h2><ul class="whylist">'+c.why.map(function(w){return '<li><span class="bullet"></span><span>'+esc(w)+'</span></li>';}).join('')+'</ul></section>';
+      blocks+='<section class="cblock"><h2 class="h2">Где применяется</h2><div class="applies">'+c.applies.map(function(a){return '<span class="chip">'+esc(a)+'</span>';}).join('')+'</div></section>';
+      blocks+='<section class="cblock" id="indicators"><h2 class="h2">Поведенческие индикаторы</h2>'
+        +'<p class="muted sm measure" style="margin-bottom:16px">Разверните индикатор, чтобы увидеть описание, как он выглядит в работе, и три уровня проявления.</p>'
+        +c.indicators.map(indAcc).join('')+'</section>';
+      blocks+='<section class="cblock" id="levels"><h2 class="h2">Как выглядит компетенция на трёх уровнях</h2>'
+        +'<div class="ltable"><div class="ltrow head"><div class="lt-c">Индикатор</div><div class="lt-c">Низкий</div><div class="lt-c">Базовый</div><div class="lt-c">Продвинутый</div></div>'
+        +c.indicators.map(function(ind){return '<div class="ltrow"><div class="lt-c ind">'+ind.n+'. '+esc(ind.title)+'</div>'
+          +'<div class="lt-c lv-low"><span class="m">Низкий</span>'+esc(ind.levels.low)+'</div>'
+          +'<div class="lt-c lv-base"><span class="m">Базовый</span>'+esc(ind.levels.base)+'</div>'
+          +'<div class="lt-c lv-adv"><span class="m">Продвинутый</span>'+esc(ind.levels.adv)+'</div></div>';}).join('')
+        +'</div><p class="ltnote">Публичные «мягкие» формулировки. Баллы, веса и правила расчёта — только внутри платформы оценки.</p></section>';
+    } else {
+      blocks+='<section class="cblock"><div class="ccase-empty" style="text-align:left;padding:20px 22px"><b>Полная модель этой компетенции публикуется следующей волной.</b><p class="sm" style="margin-top:6px">Индикаторы, уровни и описания собираются по той же методике, что и «Готовность к использованию ИИ». Кейсы этой компетенции уже доступны ниже.</p></div></section>';
+    }
+
+    blocks+='<section class="cblock" id="cases"><h2 class="h2">Кейсы по компетенции</h2>'
+      +'<div class="cfilter" id="cfilter"></div>'
+      +'<div class="ccase-grid" id="ccaseGrid"></div></section>';
+
+    blocks+='<section class="cblock"><div class="cta-inline"><div class="txt">Хотите не просто изучить компетенцию, а оценить её у сотрудника?<span>Кейси проведёт интервью по кейсам и соберёт отчёт по '+c.indicatorCount+' индикаторам за 25 минут.</span></div><button class="btn btn--accent" data-lead=\'{"source":"competency","competency":"'+id+'"}\'>Пройти AI-тестирование</button></div></section>';
+
+    var rel=(c.related||[]).map(function(rid){var r=COMP[rid];if(!r)return '';return '<article class="card rel-card" data-go="#/competencies/'+r.id+'"><span class="klabel k-'+r.color+'" style="align-self:flex-start"><span class="kdot"></span>'+esc(r.title)+'</span><p class="sm muted" style="line-height:1.45">'+esc(r.short)+'</p><span class="rc-go">Изучить '+arrowSVG+'</span></article>';}).join('');
+    blocks+='<section class="cblock" id="related"><h2 class="h2">Смежные компетенции</h2><div class="related-grid">'+rel+'</div></section>';
+
+    view.innerHTML=
+      '<section class="chead"><div class="wrap chead__in">'
+        +'<nav class="crumbs"><a href="#/competencies">Библиотека</a><span class="sep">→</span><span>'+esc(c.title)+'</span></nav>'
+        +'<span class="klabel k-'+c.color+'"><span class="kdot"></span>'+esc(c.title)+'</span>'
+        +'<h1 class="h1">'+esc(c.title)+'</h1>'
+        +'<p class="sub">'+esc(c.subtitle)+'</p>'
+        +'<div class="cmetrics"><span><b>'+c.indicatorCount+'</b> индикаторов</span><span><b>'+c.caseCount+'</b> кейсов</span><span>'+esc(c.roles)+'</span></div>'
+        +'<div class="chead__cta"><button class="btn btn--accent" data-lead=\'{"source":"competency","competency":"'+id+'"}\'>Пройти AI-тестирование по компетенции</button>'
+        +'<button class="btn btn--ghost" data-pdf-comp="'+id+'">Скачать модель в PDF</button></div>'
+      +'</div></section>'
+      +'<div class="wrap"><div class="clayout"><div class="cmain">'+blocks+'</div>'
+      +'<aside class="toc"><div class="toc__card"><div class="eyebrow">На странице</div>'+tocHTML+'<button class="btn btn--accent btn--block btn--sm" data-lead=\'{"source":"competency_toc","competency":"'+id+'"}\'>Пройти AI-тестирование</button></div></aside>'
+      +'</div></div>';
+
+    renderCompFilter(); renderCompCases(); initTocSpy();
+    setMeta(c.title+' — компетенция · EmplyFlow', c.subtitle);
+  }
+
+  function renderCompFilter(){
+    var cases=D.cases.filter(function(x){return x.comp===cCaseComp;});
+    function group(key,label){
+      var counts={}; cases.forEach(function(c){(key==='industry'?c.industry:[c[key]]).forEach(function(v){counts[v]=(counts[v]||0)+1;});});
+      var order=D.filters[key];
+      var opts=order.filter(function(o){return counts[o[0]];}).map(function(o){
+        var on=cCaseState[key].indexOf(o[0])>=0;
+        return '<button class="pill" data-cfilter="'+key+'" data-val="'+o[0]+'" aria-pressed="'+on+'">'+esc(o[1])+' · '+counts[o[0]]+'</button>';});
+      return '<div class="grp"><span>'+label+'</span><div class="opts">'+opts.join('')+'</div></div>';
+    }
+    document.getElementById('cfilter').innerHTML=group('role','Роль')+group('industry','Отрасль')+group('difficulty','Сложность');
+  }
+  function renderCompCases(){
+    var cases=D.cases.filter(function(x){return x.comp===cCaseComp;});
+    var f=cCaseState;
+    var out=cases.filter(function(c){
+      if(f.role.length&&f.role.indexOf(c.role)<0)return false;
+      if(f.difficulty.length&&f.difficulty.indexOf(c.difficulty)<0)return false;
+      if(f.industry.length&&!f.industry.some(function(v){return c.industry.indexOf(v)>=0;}))return false;
+      return true;
+    });
+    var grid=document.getElementById('ccaseGrid');
+    if(!out.length){grid.innerHTML='<div class="ccase-empty" style="grid-column:1/-1">По выбранным параметрам среди кейсов этой компетенции ничего нет. <a data-cclear>Сбросить фильтры</a></div>';}
+    else grid.innerHTML=out.map(caseCard).join('');
+  }
+  function toggleCompFilter(pill){
+    var key=pill.getAttribute('data-cfilter'), val=pill.getAttribute('data-val');
+    var arr=cCaseState[key], i=arr.indexOf(val);
+    if(i>=0)arr.splice(i,1); else arr.push(val);
+    renderCompFilter(); renderCompCases();
+  }
+  var tocObserver=null;
+  function initTocSpy(){
+    if(tocObserver)tocObserver.disconnect();
+    var links=[].slice.call(document.querySelectorAll('[data-toclink]'));
+    if(!links.length)return;
+    tocObserver=new IntersectionObserver(function(ents){
+      ents.forEach(function(en){ if(en.isIntersecting){ links.forEach(function(l){l.classList.toggle('on',l.getAttribute('data-toclink')===en.target.id);}); } });
+    },{rootMargin:'-30% 0px -60% 0px'});
+    links.forEach(function(l){var el=document.getElementById(l.getAttribute('data-toclink'));if(el)tocObserver.observe(el);});
+  }
+
+  /* ======================= CASES CATALOG [REUSE: FilterPanel+grid; each competency page reuses caseCard + a subset of these filters] ======================= */
+  var CAT_KEYS=['competency','role','industry','difficulty','situation','format','duration'];
+  var CAT_LABELS={competency:'Компетенция',role:'Роль',industry:'Отрасль',difficulty:'Сложность',situation:'Ситуация',format:'Формат',duration:'Длительность'};
+  var catState=null, catSort='popular';
+  function compOpts(){return D.competencies.map(function(c){return [c.id,c.title];});}
+  function optsFor(key){return key==='competency'?compOpts():D.filters[key];}
+  function valLabel(key,val){var o=optsFor(key).filter(function(x){return String(x[0])===String(val);})[0];return o?o[1]:val;}
+  function caseHasVal(c,key,val){
+    if(key==='competency')return c.comp===val;
+    if(key==='industry')return c.industry.indexOf(val)>=0;
+    if(key==='duration')return String(c.duration)===String(val);
+    return String(c[key])===String(val);
+  }
+  function matchExcept(c,exceptKey){
+    return CAT_KEYS.every(function(k){
+      if(k===exceptKey)return true;
+      var sel=catState[k]; if(!sel.length)return true;
+      return sel.some(function(v){return caseHasVal(c,k,v);});
+    });
+  }
+  function filteredCases(){
+    var out=D.cases.filter(function(c){return matchExcept(c,null);});
+    if(catSort==='duration')out=out.slice().sort(function(a,b){return a.duration-b.duration;});
+    else { var pop=D.popular; out=out.slice().sort(function(a,b){var ia=pop.indexOf(a.id),ib=pop.indexOf(b.id);ia=ia<0?99:ia;ib=ib<0?99:ib;return ia-ib;}); }
+    return out;
+  }
+  function catCount(key,val){var base=D.cases.filter(function(c){return matchExcept(c,key);});return base.filter(function(c){return caseHasVal(c,key,val);}).length;}
+  function activeCount(){return CAT_KEYS.reduce(function(n,k){return n+catState[k].length;},0);}
+
+  function catStateFromQuery(query){
+    var st={}; CAT_KEYS.forEach(function(k){st[k]=[];});
+    (query||'').split('&').forEach(function(pair){
+      if(!pair)return; var kv=pair.split('='); var k=decodeURIComponent(kv[0]); var v=decodeURIComponent(kv[1]||'');
+      if(k==='sort'){catSort=v||'popular';return;}
+      if(CAT_KEYS.indexOf(k)>=0&&v)st[k]=v.split(',');
+    });
+    return st;
+  }
+  function writeCatHash(){
+    var parts=[]; CAT_KEYS.forEach(function(k){if(catState[k].length)parts.push(k+'='+catState[k].join(','));});
+    if(catSort!=='popular')parts.push('sort='+catSort);
+    var h='#/cases'+(parts.length?'?'+parts.join('&'):'');
+    if(location.hash!==h){suppressRoute=true;location.hash=h;}
+  }
+
+  function fPanelHTML(){
+    return CAT_KEYS.map(function(k){
+      var opts=optsFor(k);
+      var sel=catState[k];
+      var vals=opts.map(function(o){
+        var cnt=catCount(k,o[0]); var on=sel.indexOf(String(o[0]))>=0;
+        var dis=(cnt===0&&!on);
+        return '<button class="fval" data-fkey="'+k+'" data-fval="'+o[0]+'" role="checkbox" aria-checked="'+on+'"'+(dis?' disabled title="Нет кейсов при текущих фильтрах"':'')+'>'
+          +'<span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>'
+          +esc(o[1])+'<span class="cnt">'+cnt+'</span></button>';
+      }).join('');
+      return '<div class="fgrp" data-open="'+(sel.length||['competency','role','difficulty','duration'].indexOf(k)>=0?'true':'false')+'">'
+        +'<button class="fgrp__h" data-fgrp>'+CAT_LABELS[k]+(sel.length?'<span class="cnt">'+sel.length+'</span>':'')+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>'
+        +'<div class="fgrp__b">'+vals+'</div></div>';
+    }).join('');
+  }
+  function achipsHTML(){
+    var chips=[];
+    CAT_KEYS.forEach(function(k){catState[k].forEach(function(v){chips.push('<span class="achip">'+esc(valLabel(k,v))+'<button data-rmfilter="'+k+'" data-rmval="'+v+'" aria-label="Убрать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>');});});
+    if(!chips.length)return '';
+    return chips.join('')+'<button class="clearall" data-clearall>Сбросить всё</button>';
+  }
+  function renderCatBody(){
+    var out=filteredCases();
+    document.getElementById('catCount').innerHTML='Найдено <b>'+out.length+'</b> '+plural(out.length,'кейс','кейса','кейсов');
+    document.getElementById('achips').innerHTML=achipsHTML();
+    var grid=document.getElementById('catgrid');
+    if(!out.length){
+      grid.innerHTML='<div class="catempty"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></div>'
+        +'<h3 class="h3">Под такой набор фильтров кейса пока нет</h3>'
+        +'<p>Мы собираем библиотеку под реальные запросы. Опишите вашу ситуацию — методологи EmplyFlow подготовят кейс под вашу компанию и роль.</p>'
+        +'<div class="acts"><button class="btn btn--ghost btn--sm" data-clearall>Сбросить фильтры</button><button class="btn btn--accent btn--sm" data-lead=\'{"source":"catalog_zero"}\'>Запросить кейс под компанию</button></div></div>';
+    } else grid.innerHTML=out.map(caseCard).join('');
+    // sync desktop panel + counts
+    var fp=document.getElementById('fpanelCard'); if(fp)fp.querySelector('.fgrps').innerHTML=fPanelHTML();
+    var sp=document.getElementById('sheetBody'); if(sp)sp.innerHTML=fPanelHTML();
+    var rb=document.getElementById('fReset'); if(rb)rb.disabled=activeCount()===0;
+    var fb=document.getElementById('fbarCnt'); if(fb){var n=activeCount();fb.textContent=n;fb.style.display=n?'grid':'none';}
+    var sh=document.getElementById('sheetReset'); if(sh)sh.disabled=activeCount()===0;
+  }
+  function plural(n,a,b,c){var m=n%100;if(m>=11&&m<=14)return c;var l=n%10;if(l===1)return a;if(l>=2&&l<=4)return b;return c;}
+
+  function renderCases(query){
+    catSort='popular'; catState=catStateFromQuery(query);
+    view.innerHTML=
+      '<section class="cat__head"><div class="wrap">'
+        +'<nav class="crumbs"><a href="#/competencies">Библиотека</a><span class="sep">→</span><span>Кейсы</span></nav>'
+        +'<h1 class="h1">Каталог кейсов</h1>'
+        +'<p>40 рабочих ситуаций по пяти компетенциям. Фильтруйте по роли, отрасли, сложности и типу задачи — и изучайте бесплатно.</p>'
+      +'</div></section>'
+      +'<div class="wrap">'
+        +'<div class="fbar"><button class="btn btn--ghost fbtn" id="fbarOpen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Фильтры<span class="cnt" id="fbarCnt" style="display:none">0</span></button>'
+        +'<select id="catSortM" class="btn btn--ghost" style="flex:0 0 auto"><option value="popular">Популярные</option><option value="duration">Сначала короткие</option></select></div>'
+        +'<div class="cat">'
+          +'<aside class="fpanel"><div class="fpanel__card" id="fpanelCard">'
+            +'<div class="fpanel__top"><b>Фильтры</b><button class="fpanel__reset" id="fReset" data-clearall>Сбросить</button></div>'
+            +'<div class="fgrps">'+fPanelHTML()+'</div>'
+          +'</div></aside>'
+          +'<div class="catmain">'
+            +'<div class="cattop"><span class="catcount" id="catCount"></span>'
+            +'<div class="catsort"><span class="cap">Сортировка</span><select id="catSort"><option value="popular">Популярные</option><option value="duration">Сначала короткие</option></select></div></div>'
+            +'<div class="achips" id="achips"></div>'
+            +'<div class="catgrid" id="catgrid"></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      /* bottom sheet */
+      +'<div class="sheet" id="sheet"><div class="sheet__bg" data-sheetclose></div><div class="sheet__panel">'
+        +'<div class="sheet__grab"></div>'
+        +'<div class="sheet__top"><b class="h4">Фильтры</b><button class="fpanel__reset" id="sheetReset" data-clearall>Сбросить</button></div>'
+        +'<div class="sheet__body" id="sheetBody">'+fPanelHTML()+'</div>'
+        +'<div class="sheet__foot"><button class="btn btn--ghost" data-sheetclose>Закрыть</button><button class="btn btn--neutral" id="sheetApply">Показать кейсы</button></div>'
+      +'</div></div>';
+    var sortSel=document.getElementById('catSort'); sortSel.value=catSort;
+    sortSel.addEventListener('change',function(){catSort=this.value;document.getElementById('catSortM').value=this.value;writeCatHash();renderCatBody();});
+    document.getElementById('catSortM').addEventListener('change',function(){catSort=this.value;sortSel.value=this.value;writeCatHash();renderCatBody();});
+    renderCatBody();
+    var t=D.competencies.filter(function(c){return catState.competency.indexOf(c.id)>=0;});
+    setMeta((activeCount()?'Кейсы · фильтр':'Каталог кейсов')+' — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.');
+  }
+  function toggleFilter(key,val){
+    val=String(val); var arr=catState[key]; var i=arr.indexOf(val);
+    if(i>=0)arr.splice(i,1); else arr.push(val);
+    writeCatHash(); renderCatBody();
+  }
+  function clearAllFilters(){CAT_KEYS.forEach(function(k){catState[k]=[];});writeCatHash();renderCatBody();}
+
+  /* ======================= METHODOLOGY [REUSE: chain graphic + level logic shared with competency pages] ======================= */
+  function renderMethodology(){
+    var lvl=[['Низкий','Поведение отсутствует или проявляется несистемно и создаёт риски.','#c9c9d4','var(--ink-3)'],
+             ['Базовый','Принципы понятны, работают в типовых ситуациях, в сложных нужна поддержка.','var(--k-crit)','var(--k-crit-ink)'],
+             ['Продвинутый','Действует системно, сам выбирает способ работы, учитывает последствия.','var(--k-adapt)','var(--k-adapt-ink)']];
+    var pub=['Модель компетенции и подзаголовок','Названия и описания индикаторов','«Мягкие» формулировки трёх уровней','Рабочие ситуации, роли, исходные данные','Что проверяет кейс'];
+    var priv=['Веса индикаторов','Шкалы и правила расчёта баллов','Эталонные ответы и «правильные» решения','Красные флаги','Системные промпты и лимиты уточняющих вопросов'];
+    view.innerHTML=
+      '<section class="chead"><div class="wrap chead__in">'
+        +'<nav class="crumbs"><a href="#/competencies">Библиотека</a><span class="sep">→</span><span>Методика</span></nav>'
+        +'<div class="eyebrow" style="margin-bottom:12px">Как устроена оценка</div>'
+        +'<h1 class="h1">Методика EmplyFlow</h1>'
+        +'<p class="sub">Почему это не «тест из интернета»: за каждым кейсом стоит одна цепочка — от модели компетенции до наблюдаемого поведения в реалистичной задаче.</p>'
+      +'</div></section>'
+      +'<div class="wrap"><div style="max-width:820px;margin:0 auto;padding:36px 0 60px">'
+        +'<div class="cblock"><h2 class="h2">Цепочка оценки</h2>'
+          +'<div class="method" style="margin-top:14px">'
+          +'<div class="mstep"><div class="mn">1</div><h4>Компетенция</h4><p>Что именно оцениваем и почему это важно сейчас — модель, а не набор вопросов.</p><span class="arrow">'+arrowSVG+'</span></div>'
+          +'<div class="mstep"><div class="mn">2</div><h4>Поведенческие индикаторы</h4><p>6–7 наблюдаемых проявлений, каждое с описанием трёх уровней — что видно в работе.</p><span class="arrow">'+arrowSVG+'</span></div>'
+          +'<div class="mstep"><div class="mn">3</div><h4>Рабочая ситуация</h4><p>Реалистичный кейс, где индикаторы проявляются в действии, а не в словах о себе.</p></div>'
+          +'</div></div>'
+        +'<div class="cblock"><h2 class="h2">Три уровня — одинаковая логика для всех компетенций</h2>'
+          +'<div class="ltable" style="margin-top:6px">'+lvl.map(function(l){return '<div class="ltrow" style="grid-template-columns:150px 1fr"><div class="lt-c ind" style="display:flex;align-items:center;gap:9px"><span class="kdot" style="background:'+l[2]+'"></span>'+l[0]+'</div><div class="lt-c">'+esc(l[1])+'</div></div>';}).join('')+'</div></div>'
+        +'<div class="cblock"><h2 class="h2">Почему оценка по кейсам, а не по резюме</h2><ul class="whylist">'
+          +'<li><span class="bullet"></span><span>Самооценка и резюме не различают уровни: «уверенно владею» пишут все. Разницу видно только в поведении.</span></li>'
+          +'<li><span class="bullet"></span><span>Кейс ставит человека в реалистичную ситуацию с ограничениями — и показывает, как он реально принимает решения.</span></li>'
+          +'<li><span class="bullet"></span><span>Одни и те же индикаторы работают на подборе, в Performance Review, в кадровом резерве и при построении ИПР.</span></li>'
+        +'</ul></div>'
+        +'<div class="cblock"><h2 class="h2">Что открыто, а что остаётся на платформе</h2>'
+          +'<p class="muted sm" style="margin-bottom:16px">Публичная библиотека намеренно не содержит того, что сломало бы валидность оценки. Всё «закрытое» физически отсутствует в этой библиотеке.</p>'
+          +'<div class="code-demo" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+            +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid var(--line);background:#fff"><div class="eyebrow" style="color:var(--k-adapt-ink);margin-bottom:10px">Открыто в библиотеке</div><ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--f-sm)">'+pub.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
+            +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid #e6d6da;background:var(--k-comm-tint)"><div class="eyebrow" style="color:var(--k-comm-ink);margin-bottom:10px">Только на платформе</div><ul style="margin:0;padding-left:18px;color:var(--k-comm-ink);font-size:var(--f-sm)">'+priv.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
+          +'</div></div>'
+        +'<div class="cta-inline" style="margin-top:8px"><div class="txt">Готовы измерить компетенции у своих сотрудников?<span>Кейси проведёт интервью по кейсам и соберёт персональный отчёт по индикаторам.</span></div><button class="btn btn--accent" data-lead=\'{"source":"methodology"}\'>Запросить оценку сотрудников</button></div>'
+      +'</div></div>';
+    setMeta('Методика EmplyFlow — как устроена оценка компетенций','Компетенция → поведенческие индикаторы → рабочая ситуация. Что открыто в библиотеке и что остаётся на платформе.');
+  }
+
+  /* ======================= PLACEHOLDER routes (built in later steps) ======================= */
+  function placeholder(title, step){
+    view.innerHTML='<div class="wrap"><div class="ph"><span class="badge">Готовится · шаг '+step+'</span><h2 class="h2" style="margin-bottom:8px">'+esc(title)+'</h2><p class="muted">Этот экран собирается на следующем шаге. Навигация и роутинг уже работают.</p><div style="margin-top:18px"><a class="btn btn--neutral btn--sm" href="#/competencies">← На главную</a></div></div></div>';
+  }
+
+  /* ======================= ROUTER ======================= */
+  function setMeta(title, desc){
+    document.title=title;
+    var m=document.querySelector('meta[name="description"]'); if(m&&desc)m.setAttribute('content',desc);
+  }
+  function parseHash(){
+    var h=location.hash.replace(/^#/,'')||'/competencies';
+    var qi=h.indexOf('?'); var path=qi<0?h:h.slice(0,qi); var query=qi<0?'':h.slice(qi+1);
+    return {parts:path.split('/').filter(Boolean), query:query};
+  }
+  var suppressRoute=false;
+  function route(){
+    if(suppressRoute){suppressRoute=false;return;}
+    var r=parseHash(); var p=r.parts;
+    // highlight nav
+    document.querySelectorAll('#navLinks a').forEach(function(a){a.classList.remove('on');});
+    if(p[0]==='competencies'&&!p[1]) setNav('competencies');
+    else if(p[0]==='cases') setNav('cases');
+    else if(p[1]==='methodology') setNav('methodology');
+
+    if(p[0]==='competencies'&&!p[1]) renderHome();
+    else if(p[0]==='competencies'&&p[1]==='methodology') renderMethodology();
+    else if(p[0]==='competencies'&&p[1]==='request') { renderHome(); openLead({source:'route_request'}); }
+    else if(p[0]==='competencies'&&p[1]) renderCompetency(p[1]);
+    else if(p[0]==='cases'&&p[1]) renderCase(p[1]);
+    else if(p[0]==='cases') renderCases(r.query);
+    else renderHome();
+
+    window.scrollTo(0,0);
+  }
+  function setNav(n){var a=document.querySelector('#navLinks a[data-nav="'+n+'"]'); if(a)a.classList.add('on');}
+
+  /* in-page anchor scroll (e.g. #compCatalog) without breaking router */
+  function go(hash){
+    if(hash.charAt(0)==='#'&&hash.charAt(1)!=='/'){ // in-page anchor
+      var el=document.getElementById(hash.slice(1)); if(el){window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});} return;
+    }
+    if(location.hash===hash) route(); else location.hash=hash;
+  }
+
+  /* ======================= SEARCH ======================= */
+  var ov=document.getElementById('searchOv'), sInput=document.getElementById('searchInput'), sRes=document.getElementById('searchRes'), sTimer;
+  function openSearch(){ov.classList.add('on');document.body.style.overflow='hidden';sInput.value='';renderSearch('');setTimeout(function(){sInput.focus();},30);}
+  function closeSearch(){ov.classList.remove('on');document.body.style.overflow='';}
+  function renderSearch(q){
+    q=q.trim().toLowerCase();
+    if(!q){ sRes.innerHTML='<div class="ov__grp">Начните вводить</div><div style="padding:6px 12px 16px;color:var(--ink-3);font-size:var(--f-sm)">Ищите по компетенциям, кейсам и индикаторам — например «промпт», «делегирование», «конфликт».</div>'; return; }
+    var comps=D.competencies.filter(function(c){return (c.title+' '+(c.subtitle||'')+' '+((c.keywords||[]).join(' '))).toLowerCase().indexOf(q)>=0;});
+    var cases=D.cases.filter(function(c){var comp=COMP[c.comp];return (c.title+' '+c.sd+' '+((c.kw||[]).join(' '))+' '+((comp.keywords||[]).join(' '))).toLowerCase().indexOf(q)>=0;}).slice(0,8);
+    var inds=[]; D.competencies.forEach(function(c){(c.indicators||[]).forEach(function(i){ if((i.title).toLowerCase().indexOf(q)>=0) inds.push([c,i]); });});
+    var html='';
+    if(comps.length){html+='<div class="ov__grp">Компетенции</div>'+comps.map(function(c){return '<div class="ov__item" data-go="#/competencies/'+c.id+'"><span class="klabel k-'+c.color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.short||c.subtitle)+'</div></div></div>';}).join('');}
+    if(cases.length){html+='<div class="ov__grp">Кейсы</div>'+cases.map(function(c){return '<div class="ov__item" data-go="#/cases/'+c.id+'"><span class="klabel k-'+COMP[c.comp].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.sd)+'</div></div></div>';}).join('');}
+    if(inds.length){html+='<div class="ov__grp">Индикаторы</div>'+inds.slice(0,6).map(function(x){return '<div class="ov__item" data-go="#/competencies/'+x[0].id+'"><span class="klabel k-'+x[0].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(x[1].title)+'</div><div class="oi-s">'+esc(x[0].title)+'</div></div></div>';}).join('');}
+    if(!html){ html='<div class="ov__empty"><p>Ничего не нашли по запросу «'+esc(q)+'». Опишите задачу — методологи EmplyFlow соберут кейс под вашу компанию.</p><button class="btn btn--accent btn--sm" data-lead=\'{"source":"search_zero"}\'>Запросить кейс под компанию</button></div>'; }
+    sRes.innerHTML=html;
+  }
+
+  /* ======================= CASE PAGE [REUSE: caseCard for variants; indicator anchors link back to competency page] ======================= */
+  function renderCase(id){
+    var c=CASE[id]; if(!c){renderHome();return;}
+    var comp=COMP[c.comp]; var det=c.detail;
+    var chips=[roleName(c.role)].concat(c.industry.map(labelName)).concat([diffName(c.difficulty)]);
+    var body='';
+    if(det){
+      body+='<section><h2>Рабочая ситуация</h2><p>'+esc(det.situation)+'</p></section>';
+      body+='<section><div class="frame"><div class="rl">Роль участника</div><p>'+esc(det.participant)+'</p></div>'
+        +'<div class="frame"><div class="rl">Задача</div><p>'+esc(det.task)+'</p></div></section>';
+      body+='<section><h2>Исходные данные</h2><ul class="inputlist">'+det.input.map(function(x,i){return '<li><span class="n">'+(i+1)+'</span><span>'+esc(x)+'</span></li>';}).join('')+'</ul></section>';
+      var cIcons={'срок':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>','бюджет':'<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','безопас':'<path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/>','конфиден':'<path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/>','данн':'<path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/>'};
+      function cIcon(t){t=t.toLowerCase();for(var k in cIcons){if(t.indexOf(k)>=0)return cIcons[k];}return '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>';}
+      body+='<section><h2>Ограничения</h2><div class="constraints">'+det.constraints.map(function(x){return '<span class="constraint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+cIcon(x)+'</svg>'+esc(x)+'</span>';}).join('')+'</div></section>';
+      body+='<section><h2>Формат ответа</h2><div class="fmt">'+esc(det.answerFormat)+'</div></section>';
+      body+='<section><h2>Что проверяет кейс</h2><ul class="checks">'+c.indicators.map(function(iN){var ind=(comp.indicators||[]).filter(function(x){return x.n===iN;})[0];var name=ind?ind.title:('Индикатор '+iN);return '<li><a href="#/competencies/'+comp.id+'"><span class="ci">'+iN+'</span>'+esc(name)+'<span class="go">'+arrowSVG+'</span></a></li>';}).join('')+'</ul></section>';
+    } else {
+      body+='<section><h2>Рабочая ситуация</h2><p>'+esc(c.sd)+'</p><div class="frame" style="border-left-color:var(--k-'+comp.color+')"><div class="rl">Полный кейс готовится</div><p class="muted">Ситуация, роль участника, исходные данные и что проверяет кейс — публикуются следующей волной. Вы уже можете запросить оценку по этой компетенции.</p></div></section>';
+      body+='<section><h2>Что проверяет кейс</h2><ul class="checks">'+c.indicators.map(function(iN){var ind=(comp.indicators||[]).filter(function(x){return x.n===iN;})[0];var name=ind?ind.title:('Индикатор '+iN);return '<li><a href="#/competencies/'+comp.id+'"><span class="ci" style="background:var(--k-'+comp.color+'-tint);color:var(--k-'+comp.color+'-ink)">'+iN+'</span>'+esc(name)+'<span class="go">'+arrowSVG+'</span></a></li>';}).join('')+'</ul></section>';
+    }
+    var variants=[];
+    if(c.series)variants=D.cases.filter(function(x){return x.series===c.series&&x.id!==c.id;});
+    var vHTML='';
+    if(variants.length){
+      vHTML='<section style="grid-column:1/-1;max-width:720px"><h2 style="font-size:var(--f-h3);font-weight:700;margin-bottom:14px">Другие варианты этого кейса</h2><div class="variants">'
+        +variants.map(function(v){var diff=v.role!==c.role?roleName(v.role):(v.difficulty!==c.difficulty?diffName(v.difficulty):labelName(v.industry[0]));
+          return '<article class="card variant" data-go="#/cases/'+v.id+'"><span class="vdiff">'+esc(diff)+'</span><h4>'+esc(v.title)+'</h4><p class="cap" style="line-height:1.4">'+esc(v.sd)+'</p></article>';}).join('')
+        +'</div></section>';
+    }
+    view.innerHTML=
+      '<section class="case__head"><div class="wrap">'
+        +'<nav class="crumbs"><a href="#/competencies">Библиотека</a><span class="sep">→</span><a href="#/competencies/'+comp.id+'">'+esc(comp.title)+'</a><span class="sep">→</span><span>'+esc(c.title)+'</span></nav>'
+        +'<h1>'+esc(c.title)+'</h1>'
+        +'<div class="case__meta"><span class="klabel k-'+comp.color+'"><span class="kdot"></span>'+esc(comp.title)+'</span>'
+        +chips.map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join('')
+        +'<span class="time">'+clockSVG+c.duration+' мин</span></div>'
+      +'</div></section>'
+      +'<div class="wrap"><div class="caselayout">'
+        +'<div class="casebody">'+body
+          +'<div class="caseactions"><button class="btn btn--ghost btn--sm" data-copy>Скопировать ссылку</button><button class="btn btn--ghost btn--sm" data-pdf-case="'+c.id+'">Скачать кейс в PDF</button></div>'
+        +'</div>'
+        +'<aside class="case-aside">'
+          +'<div class="case-cta"><div class="glow"></div><div class="eyebrow">AI-тестирование</div><h3>Пройти этот кейс с AI-ассистентом</h3><p>Кейси задаст уточняющие вопросы и соберёт отчёт по '+comp.indicatorCount+' индикаторам компетенции.</p><button class="btn btn--accent btn--block btn--sm" data-lead=\'{"source":"case","competency":"'+comp.id+'","case":"'+c.id+'"}\'>Пройти AI-тестирование</button></div>'
+          +'<div class="aside-card"><div class="eyebrow">Параметры кейса</div>'
+            +'<div class="krow"><span>Роль</span><b>'+roleName(c.role)+'</b></div>'
+            +'<div class="krow"><span>Сложность</span><b>'+diffName(c.difficulty)+'</b></div>'
+            +'<div class="krow"><span>Время</span><b>'+c.duration+' мин</b></div>'
+            +'<div class="krow"><span>Отрасль</span><b>'+c.industry.map(labelName).join(', ')+'</b></div>'
+          +'</div>'
+        +'</aside>'
+        +vHTML
+      +'</div></div>';
+    setMeta(c.title+' — кейс · EmplyFlow', c.sd);
+  }
+
+  /* ======================= LEAD FORM MODAL ======================= */
+  var leadCtx=null, leadStep=1, leadWho='Одного сотрудника', leadCount='1';
+  var bd=document.getElementById('leadBackdrop'), lm=document.getElementById('leadModal');
+  function openLead(ctx){ leadCtx=ctx||{}; leadStep=1; renderLead(); bd.classList.add('on'); document.body.style.overflow='hidden'; setTimeout(function(){var f=lm.querySelector('input,select,button');if(f)f.focus();},40); }
+  function closeLead(){bd.classList.remove('on');document.body.style.overflow='';}
+  function leadCompName(){var c=leadCtx.competency&&COMP[leadCtx.competency];return c?c.title:null;}
+  function leadCaseName(){var c=leadCtx.case&&CASE[leadCtx.case];return c?c.title:null;}
+  function renderLead(){
+    var cName=leadCompName(), caseName=leadCaseName();
+    if(leadStep===1){
+      lm.innerHTML=
+        '<div class="modal__top"><div><div class="eyebrow" style="color:var(--accent)">Заявка на AI-тестирование</div><div class="h3" style="margin-top:4px">Расскажите о задаче</div></div><button class="modal__x" data-leadclose aria-label="Закрыть"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
+        +'<div class="modal__steps"><div class="s on"></div><div class="s"></div></div>'
+        +'<div class="modal__b">'
+          +'<div class="field"><label>Компетенция</label><select id="leadComp">'+D.competencies.map(function(c){return '<option value="'+c.id+'"'+(leadCtx.competency===c.id?' selected':'')+'>'+esc(c.title)+'</option>';}).join('')+'</select></div>'
+          +(caseName?'<div class="field"><label>Кейс</label><span class="achip" style="background:var(--surface-2);color:var(--ink);border-color:var(--line-strong)">'+esc(caseName)+'<button data-leadrmcase aria-label="Убрать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>':'')
+          +'<div class="field"><label>Кого нужно оценить</label><div class="seg" data-seg="who">'+['Себя','Одного сотрудника','Группу','Кандидатов','Руководителей'].map(function(x){return '<button aria-pressed="'+(leadWho===x)+'">'+x+'</button>';}).join('')+'</div></div>'
+          +'<div class="field"><label>Количество участников</label><div class="seg" data-seg="count">'+['1','2–10','11–50','51–200','200+'].map(function(x){return '<button aria-pressed="'+(leadCount===x)+'">'+x+'</button>';}).join('')+'</div></div>'
+          +'<div class="modal__foot"><span class="cap">Шаг 1 из 2 · без обязательств</span><button class="btn btn--accent" id="leadNext">Далее → контакты</button></div>'
+        +'</div>';
+    } else if(leadStep===2){
+      lm.innerHTML=
+        '<div class="modal__top"><div><div class="eyebrow" style="color:var(--accent)">Заявка на AI-тестирование</div><div class="h3" style="margin-top:4px">Куда прислать ответ</div></div><button class="modal__x" data-leadclose aria-label="Закрыть"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
+        +'<div class="modal__steps"><div class="s on"></div><div class="s on"></div></div>'
+        +'<div class="modal__b">'
+          +'<div class="lead-ctx">'+(cName?'<span class="klabel k-'+COMP[leadCtx.competency||'ai-readiness'].color+'"><span class="kdot"></span>'+esc(cName)+'</span>':'')+(caseName?'<span class="chip">'+esc(caseName)+'</span>':'')+'<span class="chip">'+esc(leadWho)+' · '+esc(leadCount)+'</span></div>'
+          +'<div class="frow"><div class="field"><label>Имя <span class="req">*</span></label><input id="lfName" placeholder="Как к вам обращаться"></div><div class="field"><label>Компания <span class="req">*</span></label><input id="lfCompany" placeholder="Название"></div></div>'
+          +'<div class="field"><label>Рабочий email <span class="req">*</span></label><input id="lfEmail" type="email" placeholder="you@company.ru"><div class="hint" id="lfEmailHint">На него придёт отчёт и подтверждение.</div></div>'
+          +'<div class="frow"><div class="field"><label>Телефон</label><input id="lfPhone" placeholder="+7 (опционально)"></div><div class="field"><label>Отрасль</label><select id="lfIndustry"><option value="">Не указывать</option>'+D.filters.industry.map(function(o){return '<option>'+esc(o[1])+'</option>';}).join('')+'</select></div></div>'
+          +'<div class="field"><label>Комментарий</label><textarea id="lfComment" placeholder="Что хотите оценить и зачем — по желанию"></textarea></div>'
+          +'<div class="field"><label class="checkbox"><input type="checkbox" id="lfConsent"><span>Согласен на обработку персональных данных согласно <a href="#" onclick="return false">политике конфиденциальности</a> <span class="req">*</span></span></label><div class="hint err" id="lfConsentHint" style="display:none">Нужно согласие, чтобы отправить заявку.</div></div>'
+          +'<div class="modal__foot"><button class="btn btn--ghost btn--sm" id="leadBack">← Назад</button><button class="btn btn--accent" id="leadSubmit">Отправить заявку</button></div>'
+        +'</div>';
+    } else {
+      lm.innerHTML=
+        '<div class="modal__top"><div></div><button class="modal__x" data-leadclose aria-label="Закрыть"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
+        +'<div class="modal__b"><div class="success">'
+          +'<div class="sok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>'
+          +'<h3 class="h2">Заявка отправлена</h3>'
+          +'<p class="muted sm">Менеджер свяжется с вами в течение рабочего дня. Подтверждение мы продублировали на почту.</p>'
+          +'<div class="sctx">'+(cName?'<div><span>Компетенция</span><b>'+esc(cName)+'</b></div>':'')+(caseName?'<div><span>Кейс</span><b>'+esc(caseName)+'</b></div>':'')+'<div><span>Оценка</span><b>'+esc(leadWho)+' · '+esc(leadCount)+'</b></div></div>'
+          +'<p class="cap" style="margin-bottom:6px">Пока ждёте:</p>'
+          +'<div class="snext"><button class="btn btn--neutral btn--sm" data-leadgo="#/competencies/methodology">Посмотреть методику</button><button class="btn btn--ghost btn--sm" data-leadgo="#/competencies/'+(leadCtx.competency||'ai-readiness')+'">Скачать модель</button></div>'
+        +'</div></div>';
+    }
+  }
+  function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+  function personalEmail(v){return /@(mail\.ru|gmail\.com|yandex\.(ru|com)|ya\.ru|list\.ru|bk\.ru|inbox\.ru|rambler\.ru|icloud\.com|outlook\.com|hotmail\.com)$/i.test(v);}
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on');},2200);}
+
+  /* ======================= PDF (print-based, no deps, works in Tilda embed) ======================= */
+  var PDF_CSS='*{box-sizing:border-box}body{font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#16151d;line-height:1.55;margin:0;padding:40px;font-size:13px}'
+    +'h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}h2{font-size:16px;font-weight:700;margin:26px 0 10px}h3{font-size:14px;font-weight:700;margin:0}'
+    +'.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#6f6e7b;margin-bottom:10px}'
+    +'.sub{font-size:15px;color:#4c4b57;max-width:640px;margin:0 0 14px}.meta{font-size:12px;color:#6f6e7b;font-weight:600;margin-bottom:8px}'
+    +'.lead{max-width:660px;color:#4c4b57}.why{margin:0;padding-left:18px;color:#4c4b57}.why li{margin-bottom:6px}'
+    +'.ind{border:1px solid #e6e6ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;page-break-inside:avoid}'
+    +'.ind .num{display:inline-block;font-weight:800;color:#0b7a73;margin-right:6px}.ind p{margin:4px 0 10px;color:#4c4b57}'
+    +'table{width:100%;border-collapse:collapse;margin-top:6px}td,th{border:1px solid #e6e6ee;padding:8px 10px;text-align:left;vertical-align:top;font-size:12px}'
+    +'th{background:#f6f6fa;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#6f6e7b}td.lv{font-weight:700;width:22%;color:#16151d}'
+    +'.chips{color:#6f6e7b;font-size:12px}.foot{margin-top:26px;padding-top:14px;border-top:1px solid #e6e6ee;font-size:11px;color:#9a99a6}'
+    +'.frame{border:1px solid #e6e6ee;border-left:4px solid #0f9d94;border-radius:8px;padding:12px 14px;margin:10px 0}.frame .rl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#6f6e7b;margin-bottom:4px}'
+    +'ol{padding-left:20px;color:#4c4b57}@media print{body{padding:0}}';
+  function pdfEsc(s){return esc(s);}
+  function openPrint(title, inner){
+    var w=window.open('','_blank');
+    if(!w){toast('Разрешите всплывающие окна, чтобы скачать PDF');return;}
+    w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><title>'+pdfEsc(title)+'</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">'
+      +'<style>'+PDF_CSS+'</style></head><body>'+inner
+      +'<div class="foot">EmplyFlow · Библиотека компетенций · публичная модель. Веса, шкалы и правила расчёта баллов не входят в публичные материалы.</div>'
+      +'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},350);};</scr'+'ipt></body></html>');
+    w.document.close();
+  }
+  function printCompetency(id){
+    var c=COMP[id]; if(!c)return;
+    var inner='<div class="eyebrow">Модель компетенции · EmplyFlow</div><h1>'+pdfEsc(c.title)+'</h1><p class="sub">'+pdfEsc(c.subtitle)+'</p>'
+      +'<div class="meta">'+c.indicatorCount+' индикаторов · '+c.caseCount+' кейсов · '+pdfEsc(c.roles)+'</div>';
+    if(c.full)inner+='<h2>Что это за компетенция</h2><p class="lead">'+pdfEsc(c.full)+'</p>';
+    if(c.why&&c.why.length)inner+='<h2>Почему это важно оценивать</h2><ul class="why">'+c.why.map(function(x){return '<li>'+pdfEsc(x)+'</li>';}).join('')+'</ul>';
+    if(c.applies&&c.applies.length)inner+='<h2>Где применяется</h2><p class="chips">'+c.applies.map(pdfEsc).join(' · ')+'</p>';
+    if(c.indicators&&c.indicators.length){
+      inner+='<h2>Поведенческие индикаторы</h2>';
+      c.indicators.forEach(function(ind){
+        inner+='<div class="ind"><h3><span class="num">'+ind.n+'</span>'+pdfEsc(ind.title)+'</h3><p>'+pdfEsc(ind.desc||ind.short)+'</p>'
+          +'<table><tr><th>Низкий</th><th>Базовый</th><th>Продвинутый</th></tr>'
+          +'<tr><td>'+pdfEsc(ind.levels.low)+'</td><td>'+pdfEsc(ind.levels.base)+'</td><td>'+pdfEsc(ind.levels.adv)+'</td></tr></table></div>';
+      });
+    }
+    openPrint(c.title+' — модель компетенции', inner);
+  }
+  function printCase_(id){
+    var c=CASE[id]; if(!c)return; var comp=COMP[c.comp]; var det=c.detail;
+    var inner='<div class="eyebrow">Кейс · '+pdfEsc(comp.title)+'</div><h1>'+pdfEsc(c.title)+'</h1>'
+      +'<div class="meta">'+pdfEsc(roleName(c.role))+' · '+pdfEsc(diffName(c.difficulty))+' · '+c.duration+' мин · '+c.industry.map(labelName).map(pdfEsc).join(', ')+'</div>';
+    if(det){
+      inner+='<h2>Рабочая ситуация</h2><p class="lead">'+pdfEsc(det.situation)+'</p>'
+        +'<div class="frame"><div class="rl">Роль участника</div>'+pdfEsc(det.participant)+'</div>'
+        +'<div class="frame"><div class="rl">Задача</div>'+pdfEsc(det.task)+'</div>'
+        +'<h2>Исходные данные</h2><ol>'+det.input.map(function(x){return '<li>'+pdfEsc(x)+'</li>';}).join('')+'</ol>'
+        +'<h2>Ограничения</h2><ul class="why">'+det.constraints.map(function(x){return '<li>'+pdfEsc(x)+'</li>';}).join('')+'</ul>'
+        +'<h2>Формат ответа</h2><p class="lead">'+pdfEsc(det.answerFormat)+'</p>';
+    } else {
+      inner+='<h2>Рабочая ситуация</h2><p class="lead">'+pdfEsc(c.sd)+'</p>';
+    }
+    inner+='<h2>Что проверяет кейс</h2><ul class="why">'+c.indicators.map(function(iN){var ind=(comp.indicators||[]).filter(function(x){return x.n===iN;})[0];return '<li>'+iN+'. '+pdfEsc(ind?ind.title:('Индикатор '+iN))+'</li>';}).join('')+'</ul>';
+    openPrint(c.title+' — кейс', inner);
+  }
+
+  /* ======================= EVENTS ======================= */
+  document.getElementById('efhub').addEventListener('click',function(e){
+    var go_=e.target.closest('[data-go]'); if(go_){ // card / search click
+      if(e.target.closest('[data-lead]'))return; // let lead buttons win
+      go(go_.getAttribute('data-go')); closeSearch(); return;
+    }
+    var lead=e.target.closest('[data-lead]'); if(lead){e.preventDefault();openLead(JSON.parse(lead.getAttribute('data-lead')));return;}
+    var faqBtn=e.target.closest('[data-faq]'); if(faqBtn){var qa=faqBtn.closest('.qa');var op=qa.getAttribute('data-open')==='true';qa.setAttribute('data-open',!op);faqBtn.setAttribute('aria-expanded',!op);return;}
+    var accBtn=e.target.closest('[data-acc]'); if(accBtn){var acc=accBtn.closest('.acc');var op2=acc.getAttribute('data-open')==='true';acc.setAttribute('data-open',!op2);accBtn.setAttribute('aria-expanded',!op2);return;}
+    var lt=e.target.closest('[data-ltab]'); if(lt){var tabs=lt.parentNode;[].forEach.call(tabs.children,function(t){t.setAttribute('aria-selected','false');});lt.setAttribute('aria-selected','true');var body=lt.closest('.acc__body');var store=body.querySelector('span[data-low]');var panel=body.querySelector('.lpanel');var lvl=lt.getAttribute('data-ltab');panel.setAttribute('data-lvl',lvl);panel.textContent=decodeURIComponent(store.getAttribute('data-'+lvl));return;}
+    var pill=e.target.closest('[data-cfilter]'); if(pill){toggleCompFilter(pill);return;}
+    var cclr=e.target.closest('[data-cclear]'); if(cclr){e.preventDefault();cCaseState={role:[],industry:[],difficulty:[]};renderCompFilter();renderCompCases();return;}
+    var pdfc=e.target.closest('[data-pdf-comp]'); if(pdfc){e.preventDefault();printCompetency(pdfc.getAttribute('data-pdf-comp'));return;}
+    var pdfk=e.target.closest('[data-pdf-case]'); if(pdfk){e.preventDefault();printCase_(pdfk.getAttribute('data-pdf-case'));return;}
+    var fv=e.target.closest('[data-fkey]'); if(fv){if(fv.hasAttribute('disabled'))return;toggleFilter(fv.getAttribute('data-fkey'),fv.getAttribute('data-fval'));return;}
+    var fgrp=e.target.closest('[data-fgrp]'); if(fgrp){var g=fgrp.closest('.fgrp');g.setAttribute('data-open',g.getAttribute('data-open')!=='true');return;}
+    var rm=e.target.closest('[data-rmfilter]'); if(rm){toggleFilter(rm.getAttribute('data-rmfilter'),rm.getAttribute('data-rmval'));return;}
+    var ca=e.target.closest('[data-clearall]'); if(ca){e.preventDefault();clearAllFilters();return;}
+    if(e.target.closest('#fbarOpen')){document.getElementById('sheet').classList.add('on');document.body.style.overflow='hidden';return;}
+    if(e.target.closest('[data-sheetclose]')||e.target.closest('#sheetApply')){document.getElementById('sheet').classList.remove('on');document.body.style.overflow='';return;}
+    var cp=e.target.closest('[data-copy]'); if(cp){e.preventDefault();var url=location.href;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast('Ссылка скопирована');},function(){toast('Ссылка: '+url);});}else{toast('Ссылка: '+url);}return;}
+    var anchor=e.target.closest('a[href^="#"]'); if(anchor){var hh=anchor.getAttribute('href'); if(hh.charAt(1)!=='/'){e.preventDefault();go(hh);}return;}
+  });
+  document.getElementById('searchTrigger').addEventListener('click',openSearch);
+  document.getElementById('efhub').addEventListener('click',function(e){ if(e.target.closest('#heroSearch'))openSearch(); });
+  document.getElementById('burger').addEventListener('click',openSearch);
+  ov.addEventListener('click',function(e){if(e.target===ov)closeSearch();});
+  sInput.addEventListener('input',function(){clearTimeout(sTimer);sTimer=setTimeout(function(){renderSearch(sInput.value);},250);});
+
+  /* ---- lead modal events (delegated on the modal) ---- */
+  bd.addEventListener('click',function(e){
+    if(e.target===bd){closeLead();return;}
+    if(e.target.closest('[data-leadclose]')){closeLead();return;}
+    var seg=e.target.closest('[data-seg] button'); if(seg){var wrap=seg.closest('[data-seg]');[].forEach.call(wrap.children,function(b){b.setAttribute('aria-pressed','false');});seg.setAttribute('aria-pressed','true');if(wrap.getAttribute('data-seg')==='who')leadWho=seg.textContent;else leadCount=seg.textContent;return;}
+    if(e.target.closest('[data-leadrmcase]')){delete leadCtx.case;renderLead();return;}
+    if(e.target.closest('#leadNext')){var sel=document.getElementById('leadComp');if(sel)leadCtx.competency=sel.value;leadStep=2;renderLead();setTimeout(function(){var f=lm.querySelector('#lfName');if(f)f.focus();},40);return;}
+    if(e.target.closest('#leadBack')){leadStep=1;renderLead();return;}
+    var lg=e.target.closest('[data-leadgo]'); if(lg){closeLead();go(lg.getAttribute('data-leadgo'));return;}
+    if(e.target.closest('#leadSubmit')){submitLead();return;}
+  });
+  bd.addEventListener('input',function(e){
+    if(e.target.id==='lfEmail'){var v=e.target.value.trim();var f=e.target.closest('.field');var h=document.getElementById('lfEmailHint');
+      if(v&&validEmail(v)&&personalEmail(v)){h.className='hint warn';h.textContent='Укажите корпоративную почту — так мы быстрее ответим. Можно продолжить и с личной.';}
+      else{h.className='hint';h.textContent='На него придёт отчёт и подтверждение.';f.classList.remove('invalid');}
+    }
+  });
+  function submitLead(){
+    var name=document.getElementById('lfName'),comp=document.getElementById('lfCompany'),email=document.getElementById('lfEmail'),consent=document.getElementById('lfConsent');
+    var ok=true;
+    [[name,'lfName'],[comp,'lfCompany']].forEach(function(p){var fld=p[0].closest('.field');if(!p[0].value.trim()){fld.classList.add('invalid');ok=false;}else fld.classList.remove('invalid');});
+    var ef=email.closest('.field');var eh=document.getElementById('lfEmailHint');
+    if(!validEmail(email.value.trim())){ef.classList.add('invalid');eh.className='hint err';eh.textContent='Проверьте адрес почты.';ok=false;}
+    if(!consent.checked){document.getElementById('lfConsentHint').style.display='block';ok=false;}else document.getElementById('lfConsentHint').style.display='none';
+    if(!ok){var bad=lm.querySelector('.field.invalid input');if(bad)bad.focus();return;}
+    leadStep=3;renderLead();
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){closeSearch();closeLead();}
+    if(e.key==='/'&&!/input|textarea|select/i.test((e.target.tagName||''))&&!ov.classList.contains('on')&&!bd.classList.contains('on')){e.preventDefault();openSearch();}
+  });
+  // sticky mobile CTA after 30% scroll
+  var smcta=document.getElementById('smcta');
+  window.addEventListener('scroll',function(){
+    var sc=(window.scrollY)/(document.body.scrollHeight-window.innerHeight);
+    if(sc>0.12) smcta.classList.add('on'); else smcta.classList.remove('on');
+  },{passive:true});
+
+  window.addEventListener('hashchange',route);
+  route();
+})();
+</script>
+</body>
+</html>

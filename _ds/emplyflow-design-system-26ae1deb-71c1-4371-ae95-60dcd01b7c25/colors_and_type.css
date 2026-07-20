@@ -1,0 +1,187 @@
+/* =============================================================
+   EmplyFlow / ЭмплиФлоу — Foundational Tokens
+   Colors, Typography, Spacing, Radii, Shadows
+   ============================================================= */
+
+/* Manrope — official EmplyFlow brand font (locally hosted) */
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-ExtraLight.ttf') format('truetype'); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-Light.ttf')      format('truetype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-Regular.ttf')    format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-Medium.ttf')     format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-SemiBold.ttf')   format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-Bold.ttf')       format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/Manrope-ExtraBold.ttf')  format('truetype'); font-weight: 800; font-style: normal; font-display: swap; }
+
+:root {
+  /* ---- BRAND PALETTE -------------------------------------------------
+     Names match the official site-palette SVG.
+     Roles: Black Rock + Blue Ribbon are the workhorses.
+     The four pastels rotate as "tile" colors for cards/sections.
+     Cotton Candy is the accent highlight for callouts. */
+
+  --c-black-rock: #050230;         /* Deep navy — primary background */
+  --c-black-rock-2: #0a0540;       /* Slightly lifted */
+  --c-blue-ribbon: #4a3bff;        /* Primary action / brand indigo */
+  --c-blue-ribbon-deep: #3a2cf0;
+  --c-cotton-candy: #ffb8e2;       /* Pink accent — highlight text, dashed callouts */
+  --c-periwinkle: #cec8ff;         /* Lavender tile */
+  --c-fog: #d9d6ff;                /* Lighter lavender — surfaces, secondary text on dark */
+  --c-frosted-mint: #d5fff3;       /* Mint tile / brand-name highlight */
+  --c-mac-cheese: #ffb777;         /* Soft orange CTA + tile */
+  --c-cod-gray: #151515;           /* Near-black for dark-on-pastel */
+  --c-black: #000000;
+  --c-white: #ffffff;
+
+  /* ---- SEMANTIC SURFACES (dark theme, the brand default) ---------- */
+  --bg: var(--c-black-rock);
+  --bg-elevated: #0d0848;
+  --bg-glass: rgba(217, 214, 255, 0.06);
+  --bg-glass-strong: rgba(217, 214, 255, 0.10);
+
+  /* ---- SEMANTIC FOREGROUNDS --------------------------------------- */
+  --fg1: var(--c-white);           /* Primary text on dark */
+  --fg2: rgba(255, 255, 255, 0.72);/* Secondary */
+  --fg3: rgba(255, 255, 255, 0.48);/* Tertiary, captions */
+  --fg-mute: rgba(217, 214, 255, 0.32);
+
+  --fg-on-light: var(--c-cod-gray);
+  --fg-on-light-2: rgba(21, 21, 21, 0.66);
+
+  --fg-accent: var(--c-cotton-candy);
+  --fg-brand: var(--c-blue-ribbon);
+
+  /* ---- STROKES ----------------------------------------------------- */
+  --stroke: rgba(217, 214, 255, 0.12);
+  --stroke-strong: rgba(217, 214, 255, 0.22);
+  --stroke-dashed-accent: var(--c-cotton-candy);
+
+  /* ---- TYPE FAMILIES ---------------------------------------------- */
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-display: 'Manrope', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+
+  /* ---- TYPE SCALE (1920 baseline; scales fine via clamp on web) --- */
+  --fs-hero:   clamp(56px, 7vw, 128px);  /* @kind font */ /* Massive brand title */
+  --fs-h1:     clamp(40px, 4.5vw, 76px); /* @kind font */ /* Section heroes */
+  --fs-h2:     clamp(32px, 3vw, 52px);   /* @kind font */ /* Card titles, big stats */
+  --fs-h3:     clamp(22px, 1.6vw, 28px); /* @kind font */ /* Sub-headings */
+  --fs-h4:     20px;   /* @kind font */
+  --fs-body-l: 20px;   /* @kind font */
+  --fs-body:   17px;   /* @kind font */
+  --fs-body-s: 15px;   /* @kind font */
+  --fs-caption:13px;   /* @kind font */
+  --fs-eyebrow:12px;   /* @kind font */
+
+  /* ---- LINE HEIGHT / TRACKING ------------------------------------- */
+  --lh-tight: 1.02;  /* @kind font */
+  --lh-snug:  1.12;  /* @kind font */
+  --lh-base:  1.45;  /* @kind font */
+  --lh-loose: 1.6;   /* @kind font */
+
+  --tr-tight: -0.02em;   /* @kind font */
+  --tr-base:   0em;      /* @kind font */
+  --tr-eyebrow: 0.12em;  /* @kind font */
+
+  --fw-light: 300;  /* @kind font */
+  --fw-reg: 400;    /* @kind font */
+  --fw-med: 500;    /* @kind font */
+  --fw-semi: 600;   /* @kind font */
+  --fw-bold: 700;   /* @kind font */
+  --fw-black: 800;  /* @kind font */
+
+  /* ---- SPACING SCALE (4px base) ----------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /* ---- RADII — rounded but tactile -------------------------------- */
+  --r-xs: 8px;
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 40px;
+  --r-2xl: 56px;
+  --r-pill: 999px;
+
+  /* ---- SHADOWS ----------------------------------------------------- */
+  --shadow-card: 0 2px 0 rgba(0,0,0,0.04), 0 24px 60px -20px rgba(5,2,48,0.55);
+  --shadow-glow-indigo: 0 0 80px -10px rgba(74,59,255,0.55);
+  --shadow-glow-pink:   0 0 80px -10px rgba(255,184,226,0.45);
+
+  /* ---- MOTION ------------------------------------------------------ */
+  --ease-out: cubic-bezier(.2,.7,.2,1);     /* @kind other */
+  --ease-in-out: cubic-bezier(.7,0,.2,1);   /* @kind other */
+  --t-fast: 150ms;   /* @kind other */
+  --t-base: 240ms;   /* @kind other */
+  --t-slow: 420ms;   /* @kind other */
+}
+
+/* =============================================================
+   SEMANTIC CLASSES — drop on elements directly
+   ============================================================= */
+
+html, body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-base);
+  color: var(--fg1);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.h-hero {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.03em;
+}
+.h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+}
+.h2 {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+}
+.h3 {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semi);
+  line-height: 1.25;
+}
+.h4 { font-size: var(--fs-h4); font-weight: var(--fw-semi); }
+
+.body-l { font-size: var(--fs-body-l); line-height: var(--lh-base); }
+.body   { font-size: var(--fs-body);   line-height: var(--lh-base); }
+.body-s { font-size: var(--fs-body-s); line-height: var(--lh-base); }
+
+.caption {
+  font-size: var(--fs-caption);
+  color: var(--fg3);
+  line-height: 1.4;
+}
+.eyebrow {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--fw-semi);
+  color: var(--fg2);
+}
+
+.t-mint   { color: var(--c-frosted-mint); }
+.t-pink   { color: var(--c-cotton-candy); }
+.t-indigo { color: var(--c-blue-ribbon); }
+.t-fog    { color: var(--c-fog); }
+.t-orange { color: var(--c-mac-cheese); }

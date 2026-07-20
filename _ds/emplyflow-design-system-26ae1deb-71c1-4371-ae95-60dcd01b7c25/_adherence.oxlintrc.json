@@ -1,0 +1,218 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "ui_kits/website/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Manrope))/i]",
+        "message": "Font not provided by the design system. Available: Manrope."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {},
+    "tokens": [
+      "--bg",
+      "--bg-elevated",
+      "--bg-glass",
+      "--bg-glass-strong",
+      "--c-black",
+      "--c-black-rock",
+      "--c-black-rock-2",
+      "--c-blue-ribbon",
+      "--c-blue-ribbon-deep",
+      "--c-cod-gray",
+      "--c-cotton-candy",
+      "--c-fog",
+      "--c-frosted-mint",
+      "--c-mac-cheese",
+      "--c-periwinkle",
+      "--c-white",
+      "--ease-in-out",
+      "--ease-out",
+      "--fg-accent",
+      "--fg-brand",
+      "--fg-mute",
+      "--fg-on-light",
+      "--fg-on-light-2",
+      "--fg1",
+      "--fg2",
+      "--fg3",
+      "--font-display",
+      "--font-mono",
+      "--font-sans",
+      "--fs-body",
+      "--fs-body-l",
+      "--fs-body-s",
+      "--fs-caption",
+      "--fs-eyebrow",
+      "--fs-h1",
+      "--fs-h2",
+      "--fs-h3",
+      "--fs-h4",
+      "--fs-hero",
+      "--fw-black",
+      "--fw-bold",
+      "--fw-light",
+      "--fw-med",
+      "--fw-reg",
+      "--fw-semi",
+      "--lh-base",
+      "--lh-loose",
+      "--lh-snug",
+      "--lh-tight",
+      "--r-2xl",
+      "--r-lg",
+      "--r-md",
+      "--r-pill",
+      "--r-sm",
+      "--r-xl",
+      "--r-xs",
+      "--s-1",
+      "--s-10",
+      "--s-2",
+      "--s-3",
+      "--s-4",
+      "--s-5",
+      "--s-6",
+      "--s-7",
+      "--s-8",
+      "--s-9",
+      "--shadow-card",
+      "--shadow-glow-indigo",
+      "--shadow-glow-pink",
+      "--stroke",
+      "--stroke-dashed-accent",
+      "--stroke-strong",
+      "--t-base",
+      "--t-fast",
+      "--t-slow",
+      "--tr-base",
+      "--tr-eyebrow",
+      "--tr-tight"
+    ],
+    "tokenKinds": {
+      "--c-black-rock": "color",
+      "--c-black-rock-2": "color",
+      "--c-blue-ribbon": "color",
+      "--c-blue-ribbon-deep": "color",
+      "--c-cotton-candy": "color",
+      "--c-periwinkle": "color",
+      "--c-fog": "color",
+      "--c-frosted-mint": "color",
+      "--c-mac-cheese": "color",
+      "--c-cod-gray": "color",
+      "--c-black": "color",
+      "--c-white": "color",
+      "--bg": "color",
+      "--bg-elevated": "color",
+      "--bg-glass": "color",
+      "--bg-glass-strong": "color",
+      "--fg1": "color",
+      "--fg2": "color",
+      "--fg3": "color",
+      "--fg-mute": "color",
+      "--fg-on-light": "color",
+      "--fg-on-light-2": "color",
+      "--fg-accent": "color",
+      "--fg-brand": "color",
+      "--stroke": "color",
+      "--stroke-strong": "color",
+      "--stroke-dashed-accent": "color",
+      "--font-sans": "font",
+      "--font-display": "font",
+      "--font-mono": "font",
+      "--fs-hero": "font",
+      "--fs-h1": "font",
+      "--fs-h2": "font",
+      "--fs-h3": "font",
+      "--fs-h4": "font",
+      "--fs-body-l": "font",
+      "--fs-body": "font",
+      "--fs-body-s": "font",
+      "--fs-caption": "font",
+      "--fs-eyebrow": "font",
+      "--lh-tight": "font",
+      "--lh-snug": "font",
+      "--lh-base": "font",
+      "--lh-loose": "font",
+      "--tr-tight": "font",
+      "--tr-base": "font",
+      "--tr-eyebrow": "font",
+      "--fw-light": "font",
+      "--fw-reg": "font",
+      "--fw-med": "font",
+      "--fw-semi": "font",
+      "--fw-bold": "font",
+      "--fw-black": "font",
+      "--s-1": "spacing",
+      "--s-2": "spacing",
+      "--s-3": "spacing",
+      "--s-4": "spacing",
+      "--s-5": "spacing",
+      "--s-6": "spacing",
+      "--s-7": "spacing",
+      "--s-8": "spacing",
+      "--s-9": "spacing",
+      "--s-10": "spacing",
+      "--r-xs": "spacing",
+      "--r-sm": "spacing",
+      "--r-md": "spacing",
+      "--r-lg": "spacing",
+      "--r-xl": "spacing",
+      "--r-2xl": "spacing",
+      "--r-pill": "spacing",
+      "--shadow-card": "shadow",
+      "--shadow-glow-indigo": "shadow",
+      "--shadow-glow-pink": "shadow",
+      "--ease-out": "other",
+      "--ease-in-out": "other",
+      "--t-fast": "other",
+      "--t-base": "other",
+      "--t-slow": "other"
+    },
+    "fontFamilies": [
+      "Manrope"
+    ]
+  }
+}

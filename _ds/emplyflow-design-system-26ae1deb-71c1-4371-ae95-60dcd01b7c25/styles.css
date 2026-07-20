@@ -1,0 +1,5 @@
+/* =============================================================
+   EmplyFlow / ЭмплиФлоу — Design System entry stylesheet
+   Consumers link this single file; it pulls in the tokens.
+   ============================================================= */
+@import url('./colors_and_type.css');
