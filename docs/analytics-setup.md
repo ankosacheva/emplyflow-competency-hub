@@ -24,11 +24,13 @@
    - Execute as: **Me**
    - Who has access: **Anyone**
 4. Скопируйте URL вида `https://script.google.com/macros/s/.../exec`.
-5. В [`index.html`](../index.html) (и зеркале `EmplyFlow-Competency-Hub.html`) задайте:
+5. В [`index.html`](../index.html) (и зеркале `EmplyFlow-Competency-Hub.html`) задайте Web App URL (не Library URL):
 
 ```html
-<script>window.HUB_ANALYTICS_ENDPOINT='https://script.google.com/macros/s/ВАШ_ID/exec';</script>
+<script>window.HUB_ANALYTICS_ENDPOINT='https://script.google.com/macros/s/…/exec';</script>
 ```
+
+Текущий прод-endpoint аналитики уже прописан в репозитории. **Library URL** (`script.google.com/macros/library/...`) сайту не нужен — это адрес для подключения скрипта как библиотеки в другом Apps Script.
 
 6. Триггеры → Add Trigger:
    - Function: `rollupDaily`

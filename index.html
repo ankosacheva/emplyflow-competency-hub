@@ -772,7 +772,7 @@
 </div>
 
 <script>window.HUB_LEAD_ENDPOINT='https://script.google.com/macros/s/AKfycbwPSsRtsDOqa1U-d65K_bEtECTYT7F1RHJgwEvnZLSs83N_Fc0ZXfZaB3zljpsr9w-H/exec';</script>
-<script>window.HUB_ANALYTICS_ENDPOINT='';</script>
+<script>window.HUB_ANALYTICS_ENDPOINT='https://script.google.com/macros/s/AKfycbypUVgHUZR8PHjbrEtCsL54hP72ZooA28AmuXIcJv0ZmDWdct6tO5KOB6fWH6cb2Jaa/exec';</script>
 <script src="hub-analytics.js"></script>
 <script>
 /* ====== ВСТРОЕННЫЕ ДАННЫЕ (window.HUB_DATA). Правьте контент здесь. ====== */
@@ -1480,7 +1480,7 @@ window.HUB_DATA = {
         +'<h3 class="h3">Под такой набор фильтров кейса пока нет</h3>'
         +'<p>Мы собираем библиотеку под реальные запросы. Опишите вашу ситуацию — методологи EmplyFlow подготовят кейс под вашу компанию и роль.</p>'
         +'<div class="acts"><button class="btn btn--ghost btn--sm" data-clearall>Сбросить фильтры</button><button class="btn btn--accent btn--sm" data-lead=\'{"source":"catalog_zero"}\'>Запросить кейс под компанию</button></div></div>';
-      haTrack('catalog_zero_results',{active_filters:JSON.parse(JSON.stringify(catState)),sort:catSort});
+      if(activeCount()>0) haTrack('catalog_zero_results',{active_filters:JSON.parse(JSON.stringify(catState)),sort:catSort});
     } else grid.innerHTML=out.map(caseCard).join('');
     // sync desktop panel + counts
     var fp=document.getElementById('fpanelCard'); if(fp)fp.querySelector('.fgrps').innerHTML=fPanelHTML();
