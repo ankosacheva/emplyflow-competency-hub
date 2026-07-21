@@ -199,25 +199,27 @@
 #efhub .mstep .arrow svg{width:22px;height:22px}
 
 /* ---- CTA + report (from design-system) ---- */
-#efhub .cta{position:relative;background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:34px;overflow:hidden}
+#efhub .cta{position:relative;background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:34px;overflow:hidden;max-width:100%;box-sizing:border-box}
 #efhub .cta .eyebrow{color:var(--accent-tint);opacity:.95}
 #efhub .cta h3{color:#fff;font-size:var(--f-h2);font-weight:800;letter-spacing:-.01em;margin:8px 0 10px;max-width:560px}
 #efhub .cta p{color:rgba(255,255,255,.72);max-width:560px;font-size:var(--f-sm)}
 #efhub .cta .cta__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 #efhub .cta__glow{position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(74,59,255,.55),transparent 70%);pointer-events:none}
-#efhub .ai-2col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+#efhub .ai-2col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;min-width:0;width:100%}
+#efhub .ai-2col > *{min-width:0;max-width:100%}
 #efhub .ai-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0 22px}
 #efhub .ai-steps .st{display:flex;gap:12px;align-items:flex-start}
 #efhub .ai-steps .st .d{width:26px;height:26px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap);flex:none}
 #efhub .ai-steps .st p{font-size:var(--f-sm);color:var(--ink-2)}
-#efhub .report{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-pop);color:var(--ink)}
-#efhub .report__bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
-#efhub .report__who{display:flex;align-items:center;gap:10px}
-#efhub .report__ava{width:34px;height:34px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap)}
-#efhub .report__badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--r-pill);background:var(--accent);color:#fff}
-#efhub .report__body{padding:16px 18px}
-#efhub .rrow{display:grid;grid-template-columns:minmax(0,1fr) 64px 82px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-#efhub .rrow .rname{font-size:var(--f-cap);font-weight:600;line-height:1.3;color:var(--ink)}
+#efhub .report{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-pop);color:var(--ink);min-width:0;max-width:100%;box-sizing:border-box}
+#efhub .report__bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
+#efhub .report__who{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 180px}
+#efhub .report__who > div{min-width:0}
+#efhub .report__ava{width:34px;height:34px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:var(--f-cap);flex:none}
+#efhub .report__badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--r-pill);background:var(--accent);color:#fff;flex-shrink:0;white-space:nowrap}
+#efhub .report__body{padding:16px 18px;min-width:0}
+#efhub .rrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(48px,64px) minmax(68px,82px);gap:8px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+#efhub .rrow .rname{font-size:var(--f-cap);font-weight:600;line-height:1.3;color:var(--ink);overflow-wrap:anywhere}
 #efhub .rbar{height:7px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden}
 #efhub .rbar span{display:block;height:100%;border-radius:var(--r-pill)}
 #efhub .rlvl{font-size:11px;font-weight:700;text-align:right}
@@ -586,6 +588,12 @@
   #efhub .method{grid-template-columns:1fr}
   #efhub .mstep .arrow{display:none}
   #efhub .ai-2col{grid-template-columns:1fr;gap:20px}
+  #efhub .report__bar{padding:12px 16px}
+  #efhub .report__body{padding:12px 16px}
+  #efhub .rrow{grid-template-columns:1fr;gap:6px;padding:10px 0}
+  #efhub .rrow .rbar{width:100%}
+  #efhub .rlvl{text-align:left;font-size:10px}
+  #efhub .rcols{grid-template-columns:1fr}
   #efhub .catgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 /* iPad / tablet: не обрезать поиск и CTA */
@@ -621,8 +629,10 @@
   #efhub .searchbar{max-width:none;width:100%}
   #efhub .hstrip .case-card{min-width:min(280px,82vw);max-width:min(280px,82vw)}
   #efhub .rcols{grid-template-columns:1fr}
-  #efhub .cta{padding:24px 18px}
-  #efhub .cta h3{font-size:var(--f-h3)}
+  #efhub .cta{padding:22px 16px}
+  #efhub .cta h3{font-size:var(--f-h3);max-width:none;overflow-wrap:anywhere}
+  #efhub .ai-2col{gap:18px}
+  #efhub .cta .btn{width:100%}
   #efhub .frow{grid-template-columns:1fr}
   #efhub .modal{width:100%;max-height:min(92vh,920px);display:flex;flex-direction:column;margin:auto 0 0;border-radius:18px 18px 0 0}
   #efhub .backdrop{padding:0;align-items:flex-end}
@@ -1685,7 +1695,7 @@ window.HUB_DATA = {
           +'<div class="field"><label>Рабочий email <span class="req">*</span></label><input id="lfEmail" type="email" placeholder="you@company.ru"><div class="hint" id="lfEmailHint">На него придёт отчёт и подтверждение.</div></div>'
           +'<div class="frow"><div class="field"><label>Телефон</label><input id="lfPhone" placeholder="+7 (опционально)"></div><div class="field"><label>Отрасль</label><select id="lfIndustry"><option value="">Не указывать</option>'+D.filters.industry.map(function(o){return '<option>'+esc(o[1])+'</option>';}).join('')+'</select></div></div>'
           +'<div class="field"><label>Комментарий</label><textarea id="lfComment" placeholder="Что хотите оценить и зачем — по желанию"></textarea></div>'
-          +'<div class="field"><label class="checkbox"><input type="checkbox" id="lfConsent"><span>Согласен на обработку персональных данных согласно <a href="#" onclick="return false">политике конфиденциальности</a> <span class="req">*</span></span></label><div class="hint err" id="lfConsentHint" style="display:none">Нужно согласие, чтобы отправить заявку.</div></div>'
+          +'<div class="field"><label class="checkbox"><input type="checkbox" id="lfConsent"><span>Согласен на обработку персональных данных согласно <a href="https://emplyflow.ru/privacy" target="_blank" rel="noopener noreferrer">политике конфиденциальности</a> <span class="req">*</span></span></label><div class="hint err" id="lfConsentHint" style="display:none">Нужно согласие, чтобы отправить заявку.</div></div>'
           +'<div class="modal__foot"><button class="btn btn--ghost btn--sm" id="leadBack">← Назад</button><button class="btn btn--accent" id="leadSubmit">Отправить заявку</button></div>'
         +'</div>';
     } else {
