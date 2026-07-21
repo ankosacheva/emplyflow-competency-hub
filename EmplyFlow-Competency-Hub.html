@@ -116,18 +116,19 @@
 /* ======================= APP SHELL ======================= */
 #efhub .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 #efhub .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-#efhub .nav__in{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:22px}
+#efhub .nav__in{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:22px;min-width:0}
 #efhub .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
 #efhub .brand:hover{color:var(--ink)}
 #efhub .brand .mk{width:26px;height:26px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff}
 #efhub .brand .mk svg{width:16px;height:16px}
-#efhub .nav__links{display:flex;gap:4px;margin-left:8px}
+#efhub .nav__links{display:flex;gap:4px;margin-left:8px;min-width:0;flex-shrink:1}
 #efhub .nav__links a{color:var(--ink-2);font-weight:600;font-size:var(--f-sm);padding:8px 12px;border-radius:var(--r-sm)}
 #efhub .nav__links a:hover{background:var(--surface-2);color:var(--ink)}
 #efhub .nav__links a.on{color:var(--ink);background:var(--surface-2)}
-#efhub .nav__right{margin-left:auto;display:flex;align-items:center;gap:10px}
+#efhub .nav__right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0;min-width:0}
 #efhub .nav__search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-pill);padding:8px 14px;color:var(--ink-3);font-size:var(--f-sm);cursor:pointer;min-width:230px;white-space:nowrap}
+  border-radius:var(--r-pill);padding:8px 14px;color:var(--ink-3);font-size:var(--f-sm);cursor:pointer;min-width:230px;max-width:100%;white-space:nowrap;flex-shrink:0}
+#efhub .nav__cta{flex-shrink:0}
 #efhub .nav__search span{overflow:hidden;text-overflow:ellipsis}
 #efhub .nav__search:hover{border-color:var(--line-strong)}
 #efhub .nav__search svg{width:16px;height:16px}
@@ -587,16 +588,30 @@
   #efhub .ai-2col{grid-template-columns:1fr;gap:20px}
   #efhub .catgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+/* iPad / tablet: не обрезать поиск и CTA */
+@media(max-width:1024px){
+  #efhub .nav__in{padding:10px 16px;gap:10px}
+  #efhub .brand{font-size:17px;flex:none}
+  #efhub .nav__links{margin-left:0;gap:2px}
+  #efhub .nav__links a{padding:7px 9px;font-size:14px}
+  #efhub .nav__search{min-width:0;width:auto;max-width:150px;padding:8px 10px}
+  #efhub .nav__search span{max-width:72px}
+  #efhub .nav__search kbd{display:none}
+  #efhub .nav__cta{padding:9px 12px;font-size:12px}
+}
+@media(max-width:900px){
+  #efhub .nav__links{display:none}
+  #efhub .nav__burger{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;flex:none}
+  #efhub .nav__search{min-width:40px;width:40px;height:40px;padding:0;justify-content:center;flex:none;max-width:none}
+  #efhub .nav__search span,#efhub .nav__search kbd{display:none}
+  #efhub .nav__right{gap:8px;margin-left:auto}
+  #efhub .nav__cta{display:inline-flex;padding:9px 12px;font-size:12px}
+}
 @media(max-width:680px){
   #efhub .wrap{padding:0 16px}
   #efhub .nav__in{padding:10px 16px;gap:8px}
-  #efhub .brand{font-size:17px;flex:none}
-  #efhub .nav__links{display:none}
-  #efhub .nav__search{min-width:40px;width:40px;height:40px;padding:0;justify-content:center;flex:none}
-  #efhub .nav__search span,#efhub .nav__search kbd{display:none}
   #efhub .nav__right{gap:8px}
-  #efhub .nav__right > .btn{display:none}
-  #efhub .nav__burger{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;flex:none}
+  #efhub .nav__cta{display:none}
   #efhub .comp-grid,#efhub .tiles,#efhub .catgrid,#efhub .ccase-grid,#efhub .related-grid{grid-template-columns:1fr}
   #efhub .sec{padding:34px 0}
   #efhub .hero__in{padding:28px 0 32px}
@@ -658,7 +673,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
           <span>Поиск по библиотеке</span><kbd>/</kbd>
         </button>
-        <button class="btn btn--accent btn--sm" data-lead='{"source":"nav"}'>Запросить оценку</button>
+        <button class="btn btn--accent btn--sm nav__cta" data-lead='{"source":"nav"}'>Запросить оценку</button>
         <button class="nav__burger" id="burger" aria-label="Меню" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       </div>
     </div>
@@ -722,6 +737,7 @@
 
 </div>
 
+<script>window.HUB_LEAD_ENDPOINT='https://script.google.com/macros/s/AKfycbwPSsRtsDOqa1U-d65K_bEtECTYT7F1RHJgwEvnZLSs83N_Fc0ZXfZaB3zljpsr9w-H/exec';</script>
 <script>
 /* ====== ВСТРОЕННЫЕ ДАННЫЕ (window.HUB_DATA). Правьте контент здесь. ====== */
 /* ============================================================================
