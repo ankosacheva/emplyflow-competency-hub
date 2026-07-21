@@ -348,9 +348,12 @@
 #efhub .ccase-empty{padding:26px;text-align:center;border:1px dashed var(--line-strong);border-radius:var(--r-md);color:var(--ink-2);font-size:var(--f-sm)}
 
 /* inline commercial */
-#efhub .cta-inline{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--accent-tint);border:1px solid #d9d6ff;border-radius:var(--r-md);padding:20px 24px}
-#efhub .cta-inline .txt{font-weight:700;color:var(--accent-ink)}
+#efhub .cta-inline{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--accent-tint);border:1px solid #d9d6ff;border-radius:var(--r-md);padding:20px 24px;min-width:0;max-width:100%;box-sizing:border-box}
+#efhub .cta-inline .txt{font-weight:700;color:var(--accent-ink);min-width:0;flex:1 1 220px}
 #efhub .cta-inline .txt span{display:block;font-weight:500;color:var(--ink-2);font-size:var(--f-sm)}
+#efhub .cta-inline .btn{flex:none;max-width:100%}
+#efhub .code-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;min-width:0;width:100%}
+#efhub .code-demo > *{min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
 
 /* sticky TOC */
 #efhub .toc{position:sticky;top:76px}
@@ -588,6 +591,7 @@
   #efhub .method{grid-template-columns:1fr}
   #efhub .mstep .arrow{display:none}
   #efhub .ai-2col{grid-template-columns:1fr;gap:20px}
+  #efhub .code-demo{grid-template-columns:1fr}
   #efhub .report__bar{padding:12px 16px}
   #efhub .report__body{padding:12px 16px}
   #efhub .rrow{grid-template-columns:1fr;gap:6px;padding:10px 0}
@@ -633,6 +637,10 @@
   #efhub .cta h3{font-size:var(--f-h3);max-width:none;overflow-wrap:anywhere}
   #efhub .ai-2col{gap:18px}
   #efhub .cta .btn{width:100%}
+  #efhub .code-demo{grid-template-columns:1fr;gap:12px}
+  #efhub .cta-inline{flex-direction:column;align-items:stretch;gap:14px;padding:16px}
+  #efhub .cta-inline .txt{flex:none}
+  #efhub .cta-inline .btn{width:100%}
   #efhub .frow{grid-template-columns:1fr}
   #efhub .modal{width:100%;max-height:min(92vh,920px);display:flex;flex-direction:column;margin:auto 0 0;border-radius:18px 18px 0 0}
   #efhub .backdrop{padding:0;align-items:flex-end}
@@ -666,17 +674,20 @@
   #efhub .btn{padding:11px 14px}
 }
 
-/* ---- analytics consent ---- */
-#efConsent{position:fixed;left:16px;right:16px;bottom:16px;z-index:90;display:none;pointer-events:none}
+/* ---- analytics consent (bottom bar, outside #efhub) ---- */
+#efConsent{position:fixed;left:0;right:0;bottom:0;z-index:95;display:none;pointer-events:none;padding:0;margin:0}
 #efConsent.on{display:block}
-#efConsent .efConsent__card{pointer-events:auto;max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:16px 18px;transform:translateY(12px);opacity:0;transition:transform .28s var(--ease),opacity .28s var(--ease)}
-#efConsent.on .efConsent__card{transform:translateY(0);opacity:1}
-#efConsent p{margin:0 0 12px;font-size:var(--f-sm);color:var(--ink-2);line-height:1.45}
-#efConsent a{color:var(--accent-ink);font-weight:600}
-#efConsent .efConsent__actions{display:flex;flex-wrap:wrap;gap:8px}
+#efConsent .efConsent__card{pointer-events:auto;width:100%;max-width:none;margin:0;background:#fff;border:1px solid #e6e6ee;border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -8px 32px -12px rgba(20,18,45,.28);padding:14px 16px calc(14px + env(safe-area-inset-bottom));transform:translateY(110%);opacity:1;transition:transform .28s cubic-bezier(.2,.7,.2,1)}
+#efConsent.on .efConsent__card{transform:translateY(0)}
+#efConsent .efConsent__in{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+#efConsent p{margin:0;flex:1 1 220px;font-size:14px;color:#4c4b57;line-height:1.45;font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+#efConsent a{color:#2c22b8;font-weight:600;text-decoration:none}
+#efConsent .efConsent__actions{display:flex;flex:none}
+#efConsent .efConsent__actions .btn{font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
 @media(max-width:680px){
-  #efConsent{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom))}
-  #efConsent .efConsent__actions .btn{flex:1 1 auto}
+  #efConsent{bottom:0}
+  #efConsent .efConsent__in{flex-direction:column;align-items:stretch;gap:12px}
+  #efConsent .efConsent__actions .btn{width:100%}
 }
 </style>
 </head>
@@ -758,18 +769,19 @@
   <div class="backdrop" id="leadBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="Заявка на AI-тестирование" id="leadModal"></div></div>
   <div class="toast" id="toast"></div>
 
-  <!-- ANALYTICS CONSENT -->
-  <div id="efConsent" hidden role="dialog" aria-label="Согласие на аналитику">
+</div>
+
+  <!-- ANALYTICS CONSENT (viewport-fixed bottom bar) -->
+  <div id="efConsent" hidden role="dialog" aria-label="Cookies">
     <div class="efConsent__card">
-      <p>Мы собираем обезличенную аналитику: какие разделы смотрят, поиск, фильтры и заявки — чтобы развивать библиотеку под реальный спрос. Подробнее в <a href="https://emplyflow.ru/privacy" target="_blank" rel="noopener noreferrer">политике конфиденциальности</a>.</p>
-      <div class="efConsent__actions">
-        <button type="button" class="btn btn--accent btn--sm" data-consent="grant">Принять</button>
-        <button type="button" class="btn btn--ghost btn--sm" data-consent="deny">Только необходимые</button>
+      <div class="efConsent__in">
+        <p>Мы используем cookies и собираем анонимную статистику, чтобы улучшать сайт. Подробнее в <a href="https://emplyflow.ru/privacy" target="_blank" rel="noopener noreferrer">политике конфиденциальности</a>.</p>
+        <div class="efConsent__actions">
+          <button type="button" class="btn btn--accent btn--sm" data-consent="grant">Принять</button>
+        </div>
       </div>
     </div>
   </div>
-
-</div>
 
 <script>window.HUB_LEAD_ENDPOINT='https://script.google.com/macros/s/AKfycbwPSsRtsDOqa1U-d65K_bEtECTYT7F1RHJgwEvnZLSs83N_Fc0ZXfZaB3zljpsr9w-H/exec';</script>
 <script>window.HUB_ANALYTICS_ENDPOINT='https://script.google.com/macros/s/AKfycbypUVgHUZR8PHjbrEtCsL54hP72ZooA28AmuXIcJv0ZmDWdct6tO5KOB6fWH6cb2Jaa/exec';</script>
@@ -1584,7 +1596,7 @@ window.HUB_DATA = {
         +'</ul></div>'
         +'<div class="cblock"><h2 class="h2">Что открыто, а что остаётся на платформе</h2>'
           +'<p class="muted sm" style="margin-bottom:16px">Публичная библиотека намеренно не содержит того, что сломало бы валидность оценки. Всё «закрытое» физически отсутствует в этой библиотеке.</p>'
-          +'<div class="code-demo" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+          +'<div class="code-demo">'
             +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid var(--line);background:#fff"><div class="eyebrow" style="color:var(--k-adapt-ink);margin-bottom:10px">Открыто в библиотеке</div><ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--f-sm)">'+pub.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
             +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid #e6d6da;background:var(--k-comm-tint)"><div class="eyebrow" style="color:var(--k-comm-ink);margin-bottom:10px">Только на платформе</div><ul style="margin:0;padding-left:18px;color:var(--k-comm-ink);font-size:var(--f-sm)">'+priv.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
           +'</div></div>'
