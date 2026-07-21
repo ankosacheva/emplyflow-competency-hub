@@ -665,6 +665,19 @@
   #efhub .case-card{padding:14px}
   #efhub .btn{padding:11px 14px}
 }
+
+/* ---- analytics consent ---- */
+#efConsent{position:fixed;left:16px;right:16px;bottom:16px;z-index:90;display:none;pointer-events:none}
+#efConsent.on{display:block}
+#efConsent .efConsent__card{pointer-events:auto;max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:16px 18px;transform:translateY(12px);opacity:0;transition:transform .28s var(--ease),opacity .28s var(--ease)}
+#efConsent.on .efConsent__card{transform:translateY(0);opacity:1}
+#efConsent p{margin:0 0 12px;font-size:var(--f-sm);color:var(--ink-2);line-height:1.45}
+#efConsent a{color:var(--accent-ink);font-weight:600}
+#efConsent .efConsent__actions{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:680px){
+  #efConsent{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom))}
+  #efConsent .efConsent__actions .btn{flex:1 1 auto}
+}
 </style>
 </head>
 <body>
@@ -745,9 +758,22 @@
   <div class="backdrop" id="leadBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="Заявка на AI-тестирование" id="leadModal"></div></div>
   <div class="toast" id="toast"></div>
 
+  <!-- ANALYTICS CONSENT -->
+  <div id="efConsent" hidden role="dialog" aria-label="Согласие на аналитику">
+    <div class="efConsent__card">
+      <p>Мы собираем обезличенную аналитику: какие разделы смотрят, поиск, фильтры и заявки — чтобы развивать библиотеку под реальный спрос. Подробнее в <a href="https://emplyflow.ru/privacy" target="_blank" rel="noopener noreferrer">политике конфиденциальности</a>.</p>
+      <div class="efConsent__actions">
+        <button type="button" class="btn btn--accent btn--sm" data-consent="grant">Принять</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-consent="deny">Только необходимые</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>window.HUB_LEAD_ENDPOINT='https://script.google.com/macros/s/AKfycbwPSsRtsDOqa1U-d65K_bEtECTYT7F1RHJgwEvnZLSs83N_Fc0ZXfZaB3zljpsr9w-H/exec';</script>
+<script>window.HUB_ANALYTICS_ENDPOINT='';</script>
+<script src="hub-analytics.js"></script>
 <script>
 /* ====== ВСТРОЕННЫЕ ДАННЫЕ (window.HUB_DATA). Правьте контент здесь. ====== */
 /* ============================================================================
@@ -1108,6 +1134,9 @@ window.HUB_DATA = {
   var view = document.getElementById('view');
   var COMP = {}; D.competencies.forEach(function(c){COMP[c.id]=c;});
   var CASE = {}; D.cases.forEach(function(c){CASE[c.id]=c;});
+  var HA = window.HubAnalytics;
+  function haTrack(name, props){ if(HA && HA.track) HA.track(name, props || {}); }
+  function haIds(){ return (HA && HA.getIds) ? HA.getIds() : {visitor_id:'', session_id:''}; }
   function labelName(id){return {universal:'Универсальный',it:'IT и цифровые продукты',industry:'Промышленность',retail:'Ритейл',finance:'Финансовые услуги',prof:'Профессиональные услуги',gov:'Госсектор'}[id]||id;}
   function roleName(r){return {spec:'Специалист',head:'Руководитель',senior:'Старший руководитель'}[r]||r;}
   function diffName(d){return {base:'Базовый',adv:'Продвинутый',expert:'Экспертный'}[d]||d;}
@@ -1451,6 +1480,7 @@ window.HUB_DATA = {
         +'<h3 class="h3">Под такой набор фильтров кейса пока нет</h3>'
         +'<p>Мы собираем библиотеку под реальные запросы. Опишите вашу ситуацию — методологи EmplyFlow подготовят кейс под вашу компанию и роль.</p>'
         +'<div class="acts"><button class="btn btn--ghost btn--sm" data-clearall>Сбросить фильтры</button><button class="btn btn--accent btn--sm" data-lead=\'{"source":"catalog_zero"}\'>Запросить кейс под компанию</button></div></div>';
+      haTrack('catalog_zero_results',{active_filters:JSON.parse(JSON.stringify(catState)),sort:catSort});
     } else grid.innerHTML=out.map(caseCard).join('');
     // sync desktop panel + counts
     var fp=document.getElementById('fpanelCard'); if(fp)fp.querySelector('.fgrps').innerHTML=fPanelHTML();
@@ -1493,18 +1523,36 @@ window.HUB_DATA = {
         +'<div class="sheet__foot"><button class="btn btn--ghost" data-sheetclose>Закрыть</button><button class="btn btn--neutral" id="sheetApply">Показать кейсы</button></div>'
       +'</div></div>';
     var sortSel=document.getElementById('catSort'); sortSel.value=catSort;
-    sortSel.addEventListener('change',function(){catSort=this.value;document.getElementById('catSortM').value=this.value;writeCatHash();renderCatBody();});
-    document.getElementById('catSortM').addEventListener('change',function(){catSort=this.value;sortSel.value=this.value;writeCatHash();renderCatBody();});
+    sortSel.addEventListener('change',function(){
+      catSort=this.value;document.getElementById('catSortM').value=this.value;writeCatHash();renderCatBody();
+      haTrack('sort_change',{sort:catSort,result_count:filteredCases().length});
+    });
+    document.getElementById('catSortM').addEventListener('change',function(){
+      catSort=this.value;sortSel.value=this.value;writeCatHash();renderCatBody();
+      haTrack('sort_change',{sort:catSort,result_count:filteredCases().length});
+    });
     renderCatBody();
     var t=D.competencies.filter(function(c){return catState.competency.indexOf(c.id)>=0;});
     setMeta((activeCount()?'Кейсы · фильтр':'Каталог кейсов')+' — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.');
   }
   function toggleFilter(key,val){
     val=String(val); var arr=catState[key]; var i=arr.indexOf(val);
-    if(i>=0)arr.splice(i,1); else arr.push(val);
+    var removing=i>=0;
+    if(removing)arr.splice(i,1); else arr.push(val);
     writeCatHash(); renderCatBody();
+    haTrack(removing?'filter_remove':'filter_apply',{
+      filter_key:key,
+      filter_value:val,
+      active_filters:JSON.parse(JSON.stringify(catState)),
+      result_count:filteredCases().length,
+      sort:catSort
+    });
   }
-  function clearAllFilters(){CAT_KEYS.forEach(function(k){catState[k]=[];});writeCatHash();renderCatBody();}
+  function clearAllFilters(){
+    CAT_KEYS.forEach(function(k){catState[k]=[];});
+    writeCatHash(); renderCatBody();
+    haTrack('filters_clear',{result_count:filteredCases().length,sort:catSort});
+  }
 
   /* ======================= METHODOLOGY [REUSE: chain graphic + level logic shared with competency pages] ======================= */
   function renderMethodology(){
@@ -1578,6 +1626,18 @@ window.HUB_DATA = {
     else if(p[0]==='cases') renderCases(r.query);
     else renderHome();
 
+    if(HA && HA.pageView){
+      var extra={};
+      if(p[0]==='cases'&&p[1]&&CASE[p[1]]){
+        extra.case_id=p[1];
+        extra.competency_id=CASE[p[1]].comp||'';
+        extra.role=CASE[p[1]].role||'';
+        extra.difficulty=CASE[p[1]].difficulty||'';
+        extra.duration=CASE[p[1]].duration||'';
+      }
+      HA.pageView(extra);
+    }
+
     window.scrollTo(0,0);
   }
   function setNav(n){
@@ -1594,8 +1654,15 @@ window.HUB_DATA = {
 
   /* ======================= SEARCH ======================= */
   var ov=document.getElementById('searchOv'), sInput=document.getElementById('searchInput'), sRes=document.getElementById('searchRes'), sTimer;
-  function openSearch(){ov.classList.add('on');document.body.style.overflow='hidden';sInput.value='';renderSearch('');setTimeout(function(){sInput.focus();},30);}
-  function closeSearch(){ov.classList.remove('on');var mn=document.getElementById('mnav');if(!bd.classList.contains('on')&&!(mn&&mn.classList.contains('on')))document.body.style.overflow='';}
+  function openSearch(){
+    ov.classList.add('on');document.body.style.overflow='hidden';sInput.value='';renderSearch('');
+    setTimeout(function(){sInput.focus();},30);
+    haTrack('search_open',{});
+  }
+  function closeSearch(){
+    if(ov.classList.contains('on')) haTrack('search_close',{query:(sInput.value||'').trim()});
+    ov.classList.remove('on');var mn=document.getElementById('mnav');if(!bd.classList.contains('on')&&!(mn&&mn.classList.contains('on')))document.body.style.overflow='';
+  }
   function renderSearch(q){
     q=q.trim().toLowerCase();
     if(!q){ sRes.innerHTML='<div class="ov__grp">Начните вводить</div><div style="padding:6px 12px 16px;color:var(--ink-3);font-size:var(--f-sm)">Ищите по компетенциям, кейсам и индикаторам — например «промпт», «делегирование», «конфликт».</div>'; return; }
@@ -1603,11 +1670,20 @@ window.HUB_DATA = {
     var cases=D.cases.filter(function(c){var comp=COMP[c.comp];return (c.title+' '+c.sd+' '+((c.kw||[]).join(' '))+' '+((comp.keywords||[]).join(' '))).toLowerCase().indexOf(q)>=0;}).slice(0,8);
     var inds=[]; D.competencies.forEach(function(c){(c.indicators||[]).forEach(function(i){ if((i.title).toLowerCase().indexOf(q)>=0) inds.push([c,i]); });});
     var html='';
-    if(comps.length){html+='<div class="ov__grp">Компетенции</div>'+comps.map(function(c){return '<div class="ov__item" data-go="#/competencies/'+c.id+'"><span class="klabel k-'+c.color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.short||c.subtitle)+'</div></div></div>';}).join('');}
-    if(cases.length){html+='<div class="ov__grp">Кейсы</div>'+cases.map(function(c){return '<div class="ov__item" data-go="#/cases/'+c.id+'"><span class="klabel k-'+COMP[c.comp].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.sd)+'</div></div></div>';}).join('');}
-    if(inds.length){html+='<div class="ov__grp">Индикаторы</div>'+inds.slice(0,6).map(function(x){return '<div class="ov__item" data-go="#/competencies/'+x[0].id+'"><span class="klabel k-'+x[0].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(x[1].title)+'</div><div class="oi-s">'+esc(x[0].title)+'</div></div></div>';}).join('');}
+    if(comps.length){html+='<div class="ov__grp">Компетенции</div>'+comps.map(function(c){return '<div class="ov__item" data-go="#/competencies/'+c.id+'" data-search-hit="competency" data-search-id="'+c.id+'"><span class="klabel k-'+c.color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.short||c.subtitle)+'</div></div></div>';}).join('');}
+    if(cases.length){html+='<div class="ov__grp">Кейсы</div>'+cases.map(function(c){return '<div class="ov__item" data-go="#/cases/'+c.id+'" data-search-hit="case" data-search-id="'+c.id+'"><span class="klabel k-'+COMP[c.comp].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(c.title)+'</div><div class="oi-s">'+esc(c.sd)+'</div></div></div>';}).join('');}
+    if(inds.length){html+='<div class="ov__grp">Индикаторы</div>'+inds.slice(0,6).map(function(x){return '<div class="ov__item" data-go="#/competencies/'+x[0].id+'" data-search-hit="indicator" data-search-id="'+x[0].id+'"><span class="klabel k-'+x[0].color+'"><span class="kdot"></span></span><div><div class="oi-t">'+esc(x[1].title)+'</div><div class="oi-s">'+esc(x[0].title)+'</div></div></div>';}).join('');}
     if(!html){ html='<div class="ov__empty"><p>Ничего не нашли по запросу «'+esc(q)+'». Опишите задачу — методологи EmplyFlow соберут кейс под вашу компанию.</p><button class="btn btn--accent btn--sm" data-lead=\'{"source":"search_zero"}\'>Запросить кейс под компанию</button></div>'; }
     sRes.innerHTML=html;
+    var props={
+      query:q,
+      query_length:q.length,
+      results_competencies_count:comps.length,
+      results_cases_count:cases.length,
+      results_indicators_count:inds.length
+    };
+    if(!html || html.indexOf('ov__empty')>=0) haTrack('search_zero_results',props);
+    else haTrack('search_query',props);
   }
 
   /* ======================= CASE PAGE [REUSE: caseCard for variants; indicator anchors link back to competency page] ======================= */
@@ -1668,8 +1744,21 @@ window.HUB_DATA = {
   /* ======================= LEAD FORM MODAL ======================= */
   var leadCtx=null, leadStep=1, leadWho='Одного сотрудника', leadCount='1';
   var bd=document.getElementById('leadBackdrop'), lm=document.getElementById('leadModal');
-  function openLead(ctx){ leadCtx=ctx||{}; leadStep=1; renderLead(); bd.classList.add('on'); document.body.style.overflow='hidden'; setTimeout(function(){var f=lm.querySelector('input,select,button');if(f)f.focus();},40); }
-  function closeLead(){bd.classList.remove('on');var mn=document.getElementById('mnav');if(!ov.classList.contains('on')&&!(mn&&mn.classList.contains('on')))document.body.style.overflow='';}
+  function openLead(ctx){
+    leadCtx=ctx||{}; leadStep=1; renderLead(); bd.classList.add('on'); document.body.style.overflow='hidden';
+    setTimeout(function(){var f=lm.querySelector('input,select,button');if(f)f.focus();},40);
+    haTrack('lead_modal_open',{
+      source:leadCtx.source||'',
+      competency_id:leadCtx.competency||'',
+      case_id:leadCtx.case||''
+    });
+  }
+  function closeLead(){
+    if(bd.classList.contains('on')){
+      haTrack('lead_modal_close',{source:(leadCtx&&leadCtx.source)||'',step:leadStep});
+    }
+    bd.classList.remove('on');var mn=document.getElementById('mnav');if(!ov.classList.contains('on')&&!(mn&&mn.classList.contains('on')))document.body.style.overflow='';
+  }
   function leadCompName(){var c=leadCtx.competency&&COMP[leadCtx.competency];return c?c.title:null;}
   function leadCaseName(){var c=leadCtx.case&&CASE[leadCtx.case];return c?c.title:null;}
   function renderLead(){
@@ -1723,6 +1812,7 @@ window.HUB_DATA = {
   var LEAD_ENDPOINT = (window.HUB_LEAD_ENDPOINT || '').trim();
   function collectLeadPayload(){
     var emailEl=document.getElementById('lfEmail');
+    var ids=haIds();
     return {
       source: leadCtx && leadCtx.source || 'hub',
       competency: leadCtx && leadCtx.competency || '',
@@ -1738,7 +1828,9 @@ window.HUB_DATA = {
       industry: (document.getElementById('lfIndustry')||{}).value || '',
       comment: (document.getElementById('lfComment')||{}).value || '',
       page: location.href,
-      ts: new Date().toISOString()
+      ts: new Date().toISOString(),
+      visitor_id: ids.visitor_id || '',
+      session_id: ids.session_id || ''
     };
   }
   function sendLead(payload){
@@ -1831,9 +1923,30 @@ window.HUB_DATA = {
   document.getElementById('efhub').addEventListener('click',function(e){
     var go_=e.target.closest('[data-go]'); if(go_){ // card / search click
       if(e.target.closest('[data-lead]'))return; // let lead buttons win
+      var hit=go_.getAttribute('data-search-hit');
+      if(hit){
+        haTrack('search_result_click',{
+          query:(sInput.value||'').trim(),
+          clicked_result_type:hit,
+          clicked_result_id:go_.getAttribute('data-search-id')||'',
+          href:go_.getAttribute('data-go')||''
+        });
+      } else {
+        haTrack('card_click',{href:go_.getAttribute('data-go')||''});
+      }
       go(go_.getAttribute('data-go')); closeSearch(); return;
     }
-    var lead=e.target.closest('[data-lead]'); if(lead){e.preventDefault();openLead(JSON.parse(lead.getAttribute('data-lead')));return;}
+    var lead=e.target.closest('[data-lead]'); if(lead){
+      e.preventDefault();
+      var ctx=JSON.parse(lead.getAttribute('data-lead'));
+      haTrack('cta_click',{
+        source:ctx.source||'',
+        competency_id:ctx.competency||'',
+        case_id:ctx.case||''
+      });
+      openLead(ctx);
+      return;
+    }
     var faqBtn=e.target.closest('[data-faq]'); if(faqBtn){var qa=faqBtn.closest('.qa');var op=qa.getAttribute('data-open')==='true';qa.setAttribute('data-open',!op);faqBtn.setAttribute('aria-expanded',!op);return;}
     var accBtn=e.target.closest('[data-acc]'); if(accBtn){var acc=accBtn.closest('.acc');var op2=acc.getAttribute('data-open')==='true';acc.setAttribute('data-open',!op2);accBtn.setAttribute('aria-expanded',!op2);return;}
     var lt=e.target.closest('[data-ltab]'); if(lt){var tabs=lt.parentNode;[].forEach.call(tabs.children,function(t){t.setAttribute('aria-selected','false');});lt.setAttribute('aria-selected','true');var body=lt.closest('.acc__body');var store=body.querySelector('span[data-low]');var panel=body.querySelector('.lpanel');var lvl=lt.getAttribute('data-ltab');panel.setAttribute('data-lvl',lvl);panel.textContent=decodeURIComponent(store.getAttribute('data-'+lvl));return;}
@@ -1848,7 +1961,13 @@ window.HUB_DATA = {
     if(e.target.closest('#fbarOpen')){document.getElementById('sheet').classList.add('on');document.body.style.overflow='hidden';return;}
     if(e.target.closest('[data-sheetclose]')||e.target.closest('#sheetApply')){document.getElementById('sheet').classList.remove('on');document.body.style.overflow='';return;}
     var cp=e.target.closest('[data-copy]'); if(cp){e.preventDefault();var url=location.href;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast('Ссылка скопирована');},function(){toast('Ссылка: '+url);});}else{toast('Ссылка: '+url);}return;}
-    var anchor=e.target.closest('a[href^="#"]'); if(anchor){var hh=anchor.getAttribute('href'); if(hh.charAt(1)!=='/'){e.preventDefault();go(hh);}return;}
+    var anchor=e.target.closest('a[href^="#"]'); if(anchor){
+      var hh=anchor.getAttribute('href');
+      if(hh && hh.indexOf('#/')===0){
+        haTrack('nav_click',{href:hh,nav:anchor.getAttribute('data-nav')||''});
+      }
+      if(hh.charAt(1)!=='/'){e.preventDefault();go(hh);}return;
+    }
   });
   var mnav=document.getElementById('mnav');
   function openMnav(){mnav.hidden=false;requestAnimationFrame(function(){mnav.classList.add('on');});document.body.style.overflow='hidden';document.getElementById('burger').setAttribute('aria-expanded','true');}
@@ -1870,7 +1989,18 @@ window.HUB_DATA = {
     if(e.target.closest('[data-leadclose]')){closeLead();return;}
     var seg=e.target.closest('[data-seg] button'); if(seg){var wrap=seg.closest('[data-seg]');[].forEach.call(wrap.children,function(b){b.setAttribute('aria-pressed','false');});seg.setAttribute('aria-pressed','true');if(wrap.getAttribute('data-seg')==='who')leadWho=seg.textContent;else leadCount=seg.textContent;return;}
     if(e.target.closest('[data-leadrmcase]')){delete leadCtx.case;renderLead();return;}
-    if(e.target.closest('#leadNext')){var sel=document.getElementById('leadComp');if(sel)leadCtx.competency=sel.value;leadStep=2;renderLead();setTimeout(function(){var f=lm.querySelector('#lfName');if(f)f.focus();},40);return;}
+    if(e.target.closest('#leadNext')){
+      var sel=document.getElementById('leadComp');
+      if(sel)leadCtx.competency=sel.value;
+      haTrack('lead_step_1_complete',{
+        source:(leadCtx&&leadCtx.source)||'',
+        competency_id:(leadCtx&&leadCtx.competency)||'',
+        case_id:(leadCtx&&leadCtx.case)||'',
+        who:leadWho,
+        count:leadCount
+      });
+      leadStep=2;renderLead();setTimeout(function(){var f=lm.querySelector('#lfName');if(f)f.focus();},40);return;
+    }
     if(e.target.closest('#leadBack')){leadStep=1;renderLead();return;}
     var lg=e.target.closest('[data-leadgo]'); if(lg){closeLead();go(lg.getAttribute('data-leadgo'));return;}
     if(e.target.closest('#leadSubmit')){submitLead();return;}
@@ -1888,13 +2018,31 @@ window.HUB_DATA = {
     var ef=email.closest('.field');var eh=document.getElementById('lfEmailHint');
     if(!validEmail(email.value.trim())){ef.classList.add('invalid');eh.className='hint err';eh.textContent='Проверьте адрес почты.';ok=false;}
     if(!consent.checked){document.getElementById('lfConsentHint').style.display='block';ok=false;}else document.getElementById('lfConsentHint').style.display='none';
-    if(!ok){var bad=lm.querySelector('.field.invalid input');if(bad)bad.focus();return;}
+    if(!ok){
+      haTrack('lead_submit_attempt',{ok:false,source:(leadCtx&&leadCtx.source)||''});
+      var bad=lm.querySelector('.field.invalid input');if(bad)bad.focus();return;
+    }
     var btn=document.getElementById('leadSubmit');
     if(btn){btn.disabled=true;btn.textContent='Отправляем…';}
     var payload=collectLeadPayload();
+    haTrack('lead_submit_attempt',{
+      ok:true,
+      source:payload.source,
+      competency_id:payload.competency,
+      case_id:payload.caseId,
+      has_phone:!!payload.phone,
+      has_comment:!!payload.comment
+    });
     sendLead(payload).then(function(){
+      haTrack('lead_submit_success',{
+        source:payload.source,
+        competency_id:payload.competency,
+        case_id:payload.caseId
+      });
+      if(HA && HA.flush) HA.flush();
       leadStep=3;renderLead();
     }).catch(function(){
+      haTrack('lead_submit_error',{source:payload.source});
       if(btn){btn.disabled=false;btn.textContent='Отправить заявку';}
       toast('Не удалось отправить. Попробуйте ещё раз или напишите на почту.');
     });
@@ -1912,6 +2060,7 @@ window.HUB_DATA = {
   },{passive:true});
 
   window.addEventListener('hashchange',route);
+  if(HA && HA.init) HA.init({endpoint: window.HUB_ANALYTICS_ENDPOINT || ''});
   route();
 })();
 </script>

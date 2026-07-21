@@ -55,3 +55,12 @@ DNS (в зоне **reg.ru**, NS не менять на Timeweb):
 ```
 hub.emplyflow.ru  A  212.113.123.95
 ```
+
+## Аналитика
+
+Продуктовая аналитика (пути пользователей, поиск, фильтры, CTA, заявки) описана в [`docs/analytics-setup.md`](docs/analytics-setup.md).
+
+1. Задеплойте Apps Script из `docs/google-apps-script-analytics.js` → Web App.
+2. В `index.html` задайте `window.HUB_ANALYTICS_ENDPOINT`.
+3. Обновите скрипт заявок из `docs/google-apps-script-leads.js` (поля `visitor_id` / `session_id`).
+4. На сайте примите баннер согласия и проверьте лист `raw_events`.

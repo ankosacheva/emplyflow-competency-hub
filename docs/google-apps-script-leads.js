@@ -9,6 +9,8 @@
  *    - Execute as: Me
  *    - Who has access: Anyone
  * 5. URL деплоя положите в window.HUB_LEAD_ENDPOINT на сайте
+ *
+ * Поля visitor_id / session_id позволяют связать заявку с путём в analytics Sheet.
  */
 
 var SHEET_NAME = 'Leads';
@@ -24,8 +26,11 @@ function doPost(e) {
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
         'timestamp', 'name', 'company', 'email', 'phone', 'industry',
-        'who', 'count', 'competency', 'case', 'comment', 'source', 'page'
+        'who', 'count', 'competency', 'case', 'comment', 'source', 'page',
+        'visitor_id', 'session_id'
       ]);
+    } else {
+      ensureLeadHeaders_(sheet);
     }
 
     sheet.appendRow([
@@ -41,7 +46,9 @@ function doPost(e) {
       data.caseTitle || data.caseId || '',
       data.comment || '',
       data.source || '',
-      data.page || ''
+      data.page || '',
+      data.visitor_id || '',
+      data.session_id || ''
     ]);
 
     if (NOTIFY_EMAIL) {
@@ -57,7 +64,9 @@ function doPost(e) {
         'Кейс: ' + (data.caseTitle || data.caseId || ''),
         'Источник: ' + (data.source || ''),
         'Комментарий: ' + (data.comment || ''),
-        'Страница: ' + (data.page || '')
+        'Страница: ' + (data.page || ''),
+        'visitor_id: ' + (data.visitor_id || ''),
+        'session_id: ' + (data.session_id || '')
       ].join('\n');
       MailApp.sendEmail(NOTIFY_EMAIL, subject, body);
     }
@@ -70,6 +79,17 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function ensureLeadHeaders_(sheet) {
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var need = ['visitor_id', 'session_id'];
+  need.forEach(function (h) {
+    if (headers.indexOf(h) < 0) {
+      sheet.getRange(1, sheet.getLastColumn() + 1).setValue(h);
+      headers.push(h);
+    }
+  });
 }
 
 function doGet() {
