@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Переезд EmplyFlow Hub</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://emplyflow.ru/hub/">
+<script>
+(function () {
+  var BASE = 'https://emplyflow.ru/hub';
+  var h = location.hash || '';
+  if (h.indexOf('#/') === 0) {
+    var p = h.slice(1);
+    if (p.indexOf('/competencies/methodology') === 0) {
+      location.replace(BASE + '/methodology' + p.slice('/competencies/methodology'.length));
+      return;
+    }
+    if (p === '/competencies' || p === '/competencies/') {
+      location.replace(BASE + '/');
+      return;
+    }
+    location.replace(BASE + p + (location.search || ''));
+    return;
+  }
+  var path = location.pathname || '/';
+  if (path === '/' || path === '') {
+    location.replace(BASE + '/' + (location.search || ''));
+    return;
+  }
+  location.replace(BASE + path + (location.search || '') + h);
+})();
+</script>
+</head>
+<body>
+<p>Библиотека переехала на <a href="https://emplyflow.ru/hub/">emplyflow.ru/hub/</a>.</p>
+</body>
+</html>
