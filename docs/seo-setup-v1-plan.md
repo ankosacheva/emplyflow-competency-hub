@@ -5,7 +5,22 @@ Runbook по миграции: [`docs/migrate-emplyflow-tilda-to-timeweb.md`](mi
 
 Цель плана — сделать `emplyflow.ru/hub/` индексируемым в Яндекс, Google и AI-поисковиках без изменения контента и функциональности.
 
-## Текущее состояние (после коммита `7ffcacf`)
+## Текущее состояние (после SEO v1, ветка `cursor/seo-v1-fedc`)
+
+Реализовано полностью (фазы A–H):
+
+- **Фаза A–B:** path routing + prerender (`7ffcacf`, доработано).
+- **Фаза C:** полный `<head>` — title/description по ТЗ, canonical, OG (type, locale, image, site_name), Twitter Card, favicon, manifest, theme-color.
+- **Фаза D:** JSON-LD — Organization, WebSite, CollectionPage, DefinedTerm, LearningResource, BreadcrumbList.
+- **Фаза E:** robots.txt, sitemap.xml (84 URL), llms.txt, IndexNow key + `scripts/indexnow-ping.mjs`.
+- **Фаза F:** prerender одиночных фильтров (`cases/_pf/…`), sitemap с `?key=val`, `noindex, follow` в SPA при ≥2 фильтрах.
+- **Фаза G:** placeholders GSC / Яндекс Вебмастер / Метрика (`__GSC_TOKEN__`, `__YV_TOKEN__`, `__YM_ID__`).
+- **Фаза H:** `docs/nginx-emplyflow-hub.conf` (пример + map для filter prerender).
+- **Deliverable:** `SEO_SETUP_REPORT.md` (корень + `dist/hub/`).
+
+Билд: `node scripts/prerender-hub.mjs` → `dist/hub/`.
+
+## Текущее состояние (исторически, после коммита `7ffcacf`)
 
 Часть плана уже реализована. Что закрыто:
 
