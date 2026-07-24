@@ -14,7 +14,7 @@ export const INDEXNOW_KEY = 'a7f3c9e2b1d0486f5e8a2c4d6b9f0e3a';
 
 export const OG_IMAGES = {
   default: `${ORIGIN}${BASE}/assets/og-default.png`,
-  article: `${ORIGIN}${BASE}/assets/og-article.png`,
+  article: `${ORIGIN}${BASE}/assets/og-default.png`,
 };
 
 export const FILTER_KEYS = [

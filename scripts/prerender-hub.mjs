@@ -278,12 +278,13 @@ function writeAssets() {
   fs.writeFileSync(path.join(assets, 'favicon-192.png'), createSolidPng(192, 192, ...brand));
   fs.copyFileSync(path.join(assets, 'favicon-32.png'), path.join(assets, 'favicon.ico'));
 
-  for (const name of ['og-default.png', 'og-article.png']) {
+  for (const name of ['og-default.png']) {
     const src = path.join(srcAssets, name);
     const dest = path.join(assets, name);
     if (fs.existsSync(src)) fs.copyFileSync(src, dest);
     else fs.writeFileSync(dest, createSolidPng(1200, 630, ...brand));
   }
+  fs.copyFileSync(path.join(assets, 'og-default.png'), path.join(assets, 'og-article.png'));
 }
 
 function filterPrerenderPath(key, val) {
@@ -438,7 +439,7 @@ function main() {
     const d = descCompetency(c);
     page = addPage(url, t, d, competencyBody(c), {
       ogType: 'article',
-      ogImage: `${ORIGIN}${BASE}/assets/og-article.png`,
+      ogImage: `${ORIGIN}${BASE}/assets/og-default.png`,
       jsonLd: competencyJsonLd(c),
     });
     writePage(`competencies/${c.id}/index.html`, page);
@@ -495,7 +496,7 @@ function main() {
     const d = descCase(c, comp);
     page = addPage(url, t, d, caseBody(c, comp), {
       ogType: 'article',
-      ogImage: `${ORIGIN}${BASE}/assets/og-article.png`,
+      ogImage: `${ORIGIN}${BASE}/assets/og-default.png`,
       jsonLd: caseJsonLd(c, comp),
     });
     writePage(`cases/${c.id}/index.html`, page);

@@ -1,6 +1,6 @@
 # SEO Setup Report — EmplyFlow Competency Hub
 
-Generated: 2026-07-24T12:10:25.876Z
+Generated: 2026-07-24T12:17:20.625Z
 Canonical origin: https://emplyflow.ru/hub/
 
 ## Pre-requisite: path routing + prerender
