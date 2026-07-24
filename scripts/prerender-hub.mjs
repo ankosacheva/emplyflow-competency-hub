@@ -268,17 +268,22 @@ function buildManifest() {
 
 function writeAssets() {
   const assets = path.join(OUT, 'assets');
+  const srcAssets = path.join(ROOT, 'assets', 'seo');
   fs.mkdirSync(assets, { recursive: true });
   fs.writeFileSync(path.join(assets, 'favicon.svg'), faviconSvg());
   const brand = [74, 59, 255];
-  const accent = [44, 34, 184];
   fs.writeFileSync(path.join(assets, 'favicon-16.png'), createSolidPng(16, 16, ...brand));
   fs.writeFileSync(path.join(assets, 'favicon-32.png'), createSolidPng(32, 32, ...brand));
   fs.writeFileSync(path.join(assets, 'apple-touch-icon.png'), createSolidPng(180, 180, ...brand));
   fs.writeFileSync(path.join(assets, 'favicon-192.png'), createSolidPng(192, 192, ...brand));
-  fs.writeFileSync(path.join(assets, 'og-default.png'), createSolidPng(1200, 630, ...brand));
-  fs.writeFileSync(path.join(assets, 'og-article.png'), createSolidPng(1200, 630, ...accent));
   fs.copyFileSync(path.join(assets, 'favicon-32.png'), path.join(assets, 'favicon.ico'));
+
+  for (const name of ['og-default.png', 'og-article.png']) {
+    const src = path.join(srcAssets, name);
+    const dest = path.join(assets, name);
+    if (fs.existsSync(src)) fs.copyFileSync(src, dest);
+    else fs.writeFileSync(dest, createSolidPng(1200, 630, ...brand));
+  }
 }
 
 function filterPrerenderPath(key, val) {
