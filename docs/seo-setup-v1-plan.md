@@ -5,6 +5,25 @@ Runbook по миграции: [`docs/migrate-emplyflow-tilda-to-timeweb.md`](mi
 
 Цель плана — сделать `emplyflow.ru/hub/` индексируемым в Яндекс, Google и AI-поисковиках без изменения контента и функциональности.
 
+## Текущее состояние (после коммита `7ffcacf`)
+
+Часть плана уже реализована. Что закрыто:
+
+- **Фаза A (path routing).** Hub переведён с hash на History API под `/hub/`, есть [`hash-redirect.html`](../hash-redirect.html) и [`scripts/migrate-to-hub-paths.py`](../scripts/migrate-to-hub-paths.py).
+- **Фаза B (prerender).** Данные вынесены в [`hub-data.js`](../hub-data.js), билд-скрипт [`scripts/prerender-hub.mjs`](../scripts/prerender-hub.mjs) генерирует статику для главной, `/competencies/<slug>`, `/cases`, `/cases/<slug>`, `/methodology`, а также `sitemap.xml` и `robots.txt` (с Яндекс `Clean-param` и Allow для AI-краулеров).
+- **Фаза C (базово).** В prerender подставляются `<title>`, `<meta description>`, `<link rel="canonical">`, `og:url`, `og:title`, `og:description`.
+
+Что остаётся сделать по этому плану (см. фазы ниже):
+
+- Расширение head-шаблона: `og:type`, `og:image`, `og:site_name`, `og:locale`, `twitter:*`, полный favicon-набор, `manifest.webmanifest`, `theme-color` (Фаза C, добить).
+- **JSON-LD** для Organization / WebSite / CollectionPage / DefinedTerm / LearningResource / BreadcrumbList (Фаза D — не начата).
+- **llms.txt** и **IndexNow** endpoint (Фаза E, дополнить).
+- **Одиночные фильтр-страницы** в prerender и sitemap + `noindex, follow` на комбинации 2+ фильтров (Фаза F — не начата).
+- **Метрика** и placeholders для `google-site-verification` / `yandex-verification` (Фаза G — не начата).
+- **nginx-конфиг**: `/hub/` под `try_files`, 301 с `hub.emplyflow.ru`, gzip/brotli, HSTS (Фаза H — не начата).
+- Уточнить `og:image` (один фирменный на тип страницы) и добавить его в prerender.
+- Расширить sitemap `lastmod` (сейчас берётся время билда — приемлемо, но можно уточнить по данным).
+
 ---
 
 ## 0. Исходные данные
