@@ -9,14 +9,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Библиотека компетенций и кейсов EmplyFlow</title>
-<meta name="description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.">
+<title>Библиотека компетенций и кейсов для оценки персонала — EmplyFlow</title>
+<meta name="description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей в HR и T&D.">
 <link rel="canonical" href="https://emplyflow.ru/hub/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="EmplyFlow Hub">
+<meta property="og:site_name" content="EmplyFlow">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://emplyflow.ru/hub/assets/og-default.png">
+<meta name="google-site-verification" content="__GSC_TOKEN__">
+<meta name="yandex-verification" content="__YV_TOKEN__">
+<meta name="twitter:title" content="Библиотека компетенций и кейсов для оценки персонала — EmplyFlow">
+<meta name="twitter:description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей в HR и T&D.">
+<meta name="twitter:image" content="https://emplyflow.ru/hub/assets/og-default.png">
+<meta name="theme-color" content="#4a3bff">
+<link rel="icon" href="/hub/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/hub/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/hub/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/hub/assets/apple-touch-icon.png">
+<link rel="manifest" href="/hub/manifest.webmanifest">
 <meta property="og:url" content="https://emplyflow.ru/hub/">
-<meta property="og:title" content="Библиотека компетенций и кейсов EmplyFlow">
-<meta property="og:description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.">
+<meta property="og:title" content="Библиотека компетенций и кейсов для оценки персонала — EmplyFlow">
+<meta property="og:description" content="Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей в HR и T&D.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -788,8 +801,20 @@
 
 <script>window.HUB_LEAD_ENDPOINT='https://script.google.com/macros/s/AKfycbwPSsRtsDOqa1U-d65K_bEtECTYT7F1RHJgwEvnZLSs83N_Fc0ZXfZaB3zljpsr9w-H/exec';</script>
 <script>window.HUB_ANALYTICS_ENDPOINT='https://script.google.com/macros/s/AKfycbypUVgHUZR8PHjbrEtCsL54hP72ZooA28AmuXIcJv0ZmDWdct6tO5KOB6fWH6cb2Jaa/exec';</script>
+<script>window.HUB_YM_ID=window.HUB_YM_ID||'__YM_ID__';</script>
 <script src="/hub/hub-analytics.js"></script>
 <script src="/hub/hub-data.js"></script>
+<script>
+(function(){
+  var id=window.HUB_YM_ID;
+  if(!id||id==='__YM_ID__')return;
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments);};m[i].l=1*new Date();
+    for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r)return;}
+    k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a);
+  })(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+  ym(id,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:false});
+})();
+</script>
 <script>
 (function(){
   var D = window.HUB_DATA;
@@ -938,7 +963,7 @@
       +'<div style="text-align:center;margin-top:32px"><p class="muted sm" style="margin-bottom:14px">Готовы измерить компетенции у своих сотрудников?</p><button class="btn btn--accent" data-lead=\'{"source":"faq"}\'>Запросить оценку сотрудников</button></div>'
     +'</div></section>';
 
-    setMeta('Библиотека компетенций и кейсов EmplyFlow','Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей.');
+    setMeta('Библиотека компетенций и кейсов для оценки персонала — EmplyFlow','Готовые модели компетенций, поведенческие индикаторы и рабочие ситуации для оценки сотрудников и руководителей в HR и T&D.',{ogType:'website'});
   }
 
   /* ======================= COMPETENCY PAGE [REUSE: this template generates all 5 competency pages; later each can move to its own Tilda page with own URL/SEO] ======================= */
@@ -1020,7 +1045,7 @@
       +'</div></div>';
 
     renderCompFilter(); renderCompCases(); initTocSpy();
-    setMeta(c.title+' — компетенция · EmplyFlow', c.subtitle);
+    setMeta(c.title+' — модель компетенции, индикаторы и уровни | EmplyFlow', c.subtitle||c.short,{ogType:'article'});
   }
 
   function renderCompFilter(){
@@ -1093,6 +1118,20 @@
   }
   function catCount(key,val){var base=D.cases.filter(function(c){return matchExcept(c,key);});return base.filter(function(c){return caseHasVal(c,key,val);}).length;}
   function activeCount(){return CAT_KEYS.reduce(function(n,k){return n+catState[k].length;},0);}
+  function updateCasesMeta(){
+    var n=activeCount();
+    var caseN=D.cases.length;
+    if(n>=2){
+      setMeta('Каталог кейсов — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.',{noindex:true,canonical:ORIGIN+BASE+'/cases',ogType:'website'});
+    } else if(n===1){
+      var key=null,val=null;
+      CAT_KEYS.forEach(function(k){if(catState[k].length===1 && !key){key=k;val=catState[k][0];}});
+      var q=key?key+'='+encodeURIComponent(val):'';
+      setMeta('Кейсы для оценки сотрудников: '+caseN+' рабочих ситуаций — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.',{canonical:ORIGIN+BASE+'/cases'+(q?'?'+q:''),includeQuery:false,ogType:'website'});
+    } else {
+      setMeta('Кейсы для оценки сотрудников: '+caseN+' рабочих ситуаций — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.',{ogType:'website'});
+    }
+  }
 
   function catStateFromQuery(query){
     var st={}; CAT_KEYS.forEach(function(k){st[k]=[];});
@@ -1151,6 +1190,7 @@
     var rb=document.getElementById('fReset'); if(rb)rb.disabled=activeCount()===0;
     var fb=document.getElementById('fbarCnt'); if(fb){var n=activeCount();fb.textContent=n;fb.style.display=n?'grid':'none';}
     var sh=document.getElementById('sheetReset'); if(sh)sh.disabled=activeCount()===0;
+    if(typeof updateCasesMeta==='function') updateCasesMeta();
   }
   function plural(n,a,b,c){var m=n%100;if(m>=11&&m<=14)return c;var l=n%10;if(l===1)return a;if(l>=2&&l<=4)return b;return c;}
 
@@ -1195,8 +1235,7 @@
       haTrack('sort_change',{sort:catSort,result_count:filteredCases().length});
     });
     renderCatBody();
-    var t=D.competencies.filter(function(c){return catState.competency.indexOf(c.id)>=0;});
-    setMeta((activeCount()?'Кейсы · фильтр':'Каталог кейсов')+' — EmplyFlow','40 рабочих ситуаций по компетенциям для оценки сотрудников.');
+    updateCasesMeta();
   }
   function toggleFilter(key,val){
     val=String(val); var arr=catState[key]; var i=arr.indexOf(val);
@@ -1253,7 +1292,7 @@
           +'</div></div>'
         +'<div class="cta-inline" style="margin-top:8px"><div class="txt">Готовы измерить компетенции у своих сотрудников?<span>Кейси проведёт интервью по кейсам и соберёт персональный отчёт по индикаторам.</span></div><button class="btn btn--accent" data-lead=\'{"source":"methodology"}\'>Запросить оценку сотрудников</button></div>'
       +'</div></div>';
-    setMeta('Методика EmplyFlow — как устроена оценка компетенций','Компетенция → поведенческие индикаторы → рабочая ситуация. Что открыто в библиотеке и что остаётся на платформе.');
+    setMeta('Методика оценки по компетенциям и кейсам — EmplyFlow','Компетенция → поведенческие индикаторы → рабочая ситуация. Что открыто в библиотеке EmplyFlow и что остаётся на платформе оценки.',{ogType:'website'});
   }
 
   /* ======================= PLACEHOLDER routes (built in later steps) ======================= */
@@ -1264,22 +1303,37 @@
   /* ======================= ROUTER (path under /hub) ======================= */
   var BASE='/hub';
   var ORIGIN='https://emplyflow.ru';
+  var OG_DEFAULT=ORIGIN+BASE+'/assets/og-default.png';
+  var OG_ARTICLE=ORIGIN+BASE+'/assets/og-article.png';
   var suppressRoute=false;
 
-  function setMeta(title, desc){
+  function setMeta(title, desc, opts){
+    opts=opts||{};
     document.title=title;
     var m=document.querySelector('meta[name="description"]'); if(m&&desc)m.setAttribute('content',desc);
     var clean=(location.pathname||BASE+'/').split('?')[0];
     if(clean.indexOf(BASE)!==0) clean=BASE+'/';
     if(clean!==BASE+'/' && clean.slice(-1)==='/') clean=clean.slice(0,-1);
     if(clean===BASE) clean=BASE+'/';
-    var url=ORIGIN+clean;
+    var url=opts.canonical || (ORIGIN+clean+(opts.includeQuery?location.search:''));
     var link=document.querySelector('link[rel="canonical"]');
     if(!link){link=document.createElement('link');link.rel='canonical';document.head.appendChild(link);}
     link.href=url;
     var ogu=document.querySelector('meta[property="og:url"]'); if(ogu)ogu.setAttribute('content',url);
     var ogt=document.querySelector('meta[property="og:title"]'); if(ogt)ogt.setAttribute('content',title);
     var ogd=document.querySelector('meta[property="og:description"]'); if(ogd&&desc)ogd.setAttribute('content',desc);
+    var ogtype=document.querySelector('meta[property="og:type"]'); if(ogtype)ogtype.setAttribute('content',opts.ogType||'website');
+    var ogimg=document.querySelector('meta[property="og:image"]'); if(ogimg)ogimg.setAttribute('content',opts.ogImage||(opts.ogType==='article'?OG_ARTICLE:OG_DEFAULT));
+    var twt=document.querySelector('meta[name="twitter:title"]'); if(twt)twt.setAttribute('content',title);
+    var twd=document.querySelector('meta[name="twitter:description"]'); if(twd&&desc)twd.setAttribute('content',desc);
+    var twi=document.querySelector('meta[name="twitter:image"]'); if(twi)twi.setAttribute('content',opts.ogImage||(opts.ogType==='article'?OG_ARTICLE:OG_DEFAULT));
+    var robots=document.querySelector('meta[name="robots"]');
+    if(opts.noindex){
+      if(!robots){robots=document.createElement('meta');robots.name='robots';document.head.appendChild(robots);}
+      robots.setAttribute('content','noindex, follow');
+    } else if(robots && robots.getAttribute('data-dynamic')==='1'){
+      robots.parentNode.removeChild(robots);
+    }
   }
 
   function hashToPath(h){
@@ -1437,7 +1491,7 @@
         +'</aside>'
         +vHTML
       +'</div></div>';
-    setMeta(c.title+' — кейс · EmplyFlow', c.sd);
+    setMeta('Кейс «'+c.title+'» — оценка компетенции «'+comp.title+'» | EmplyFlow', c.sd,{ogType:'article'});
   }
 
   /* ======================= LEAD FORM MODAL ======================= */
