@@ -240,7 +240,7 @@ function buildLlmsTxt(D) {
   D.competencies.forEach((c) => {
     lines.push(`- ${c.title}: ${pageUrl(`/competencies/${c.id}`)}`);
   });
-  lines.push('', '## Контакты', `- ${ORIGIN}`, '- hello@emplyflow.ru', '');
+  lines.push('', '## Контакты', `- ${ORIGIN}`, '- headoffice@emplyflow.ru', '');
   return lines.join('\n');
 }
 
