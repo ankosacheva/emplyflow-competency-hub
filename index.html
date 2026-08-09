@@ -1284,7 +1284,6 @@
           +'<li><span class="bullet"></span><span>Одни и те же индикаторы работают на подборе, в Performance Review, в кадровом резерве и при построении ИПР.</span></li>'
         +'</ul></div>'
         +'<div class="cblock"><h2 class="h2">Что открыто, а что остаётся на платформе</h2>'
-          +'<p class="muted sm" style="margin-bottom:16px">Публичная библиотека намеренно не содержит того, что сломало бы валидность оценки. Всё «закрытое» физически отсутствует в этой библиотеке.</p>'
           +'<div class="code-demo">'
             +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid var(--line);background:#fff"><div class="eyebrow" style="color:var(--k-adapt-ink);margin-bottom:10px">Открыто в библиотеке</div><ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--f-sm)">'+pub.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
             +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid #e6d6da;background:var(--k-comm-tint)"><div class="eyebrow" style="color:var(--k-comm-ink);margin-bottom:10px">Только на платформе</div><ul style="margin:0;padding-left:18px;color:var(--k-comm-ink);font-size:var(--f-sm)">'+priv.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
