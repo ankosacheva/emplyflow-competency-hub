@@ -368,8 +368,19 @@
 #efhub .cta-inline .txt{font-weight:700;color:var(--accent-ink);min-width:0;flex:1 1 220px}
 #efhub .cta-inline .txt span{display:block;font-weight:500;color:var(--ink-2);font-size:var(--f-sm)}
 #efhub .cta-inline .btn{flex:none;max-width:100%}
-#efhub .code-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;min-width:0;width:100%}
-#efhub .code-demo > *{min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+#efhub .code-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;min-width:0;width:100%}
+#efhub .bento-card{min-width:0;max-width:100%;box-sizing:border-box;overflow:hidden;position:relative;
+  padding:20px;border-radius:var(--r-lg);border:1px solid var(--line);background:#fff;box-shadow:var(--shadow-pop)}
+#efhub .bento-card::after{content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,59,255,.18),transparent 70%);pointer-events:none}
+#efhub .bento-title{color:var(--ink);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+#efhub .bento-list{margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--f-sm)}
+#efhub .bento-list li{margin-bottom:8px}
+#efhub .bento-card--open .bento-title{color:var(--k-adapt-ink)}
+#efhub .bento-card--platform{border-color:#e6d6da;background:linear-gradient(180deg,rgba(255,255,255,.55),transparent 70%),var(--k-comm-tint)}
+#efhub .bento-card--platform::after{background:radial-gradient(circle,rgba(255,96,158,.18),transparent 70%)}
+#efhub .bento-card--platform .bento-title{color:var(--k-comm-ink)}
+#efhub .bento-card--platform .bento-list{color:var(--k-comm-ink)}
 
 /* sticky TOC */
 #efhub .toc{position:sticky;top:76px}
@@ -1285,8 +1296,8 @@
         +'</ul></div>'
         +'<div class="cblock"><h2 class="h2">Что открыто, а что остаётся на платформе</h2>'
           +'<div class="code-demo">'
-            +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid var(--line);background:#fff"><div class="eyebrow" style="color:var(--k-adapt-ink);margin-bottom:10px">Открыто в библиотеке</div><ul style="margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--f-sm)">'+pub.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
-            +'<div style="padding:18px;border-radius:var(--r-md);border:1px solid #e6d6da;background:var(--k-comm-tint)"><div class="eyebrow" style="color:var(--k-comm-ink);margin-bottom:10px">Только на платформе</div><ul style="margin:0;padding-left:18px;color:var(--k-comm-ink);font-size:var(--f-sm)">'+priv.map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join('')+'</ul></div>'
+            +'<div class="bento-card bento-card--open"><div class="bento-title">Открыто в библиотеке</div><ul class="bento-list">'+pub.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>'
+            +'<div class="bento-card bento-card--platform"><div class="bento-title">Только на платформе</div><ul class="bento-list">'+priv.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>'
           +'</div></div>'
         +'<div class="cta-inline" style="margin-top:8px"><div class="txt">Готовы измерить компетенции у своих сотрудников?<span>Кейси проведёт интервью по кейсам и соберёт персональный отчёт по индикаторам.</span></div><button class="btn btn--accent" data-lead=\'{"source":"methodology"}\'>Запросить оценку сотрудников</button></div>'
       +'</div></div>';
